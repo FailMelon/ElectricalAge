@@ -3,10 +3,11 @@ package mods.eln.sixnode.TreeResinCollector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TreeResinCollectorBlock extends BlockContainer {
@@ -17,7 +18,7 @@ public class TreeResinCollectorBlock extends BlockContainer {
 	}
     
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isOpaqueCube(IBlockState state) {
 	  return false;
 	}
 	

@@ -3,9 +3,6 @@ package mods.eln.node.simple;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import mods.eln.Eln;
 import mods.eln.misc.Coordonate;
 import mods.eln.misc.DescriptorManager;
@@ -21,8 +18,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity{
 
@@ -35,9 +35,9 @@ public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity
 		}
 		if(this.worldObj == null) return null;
 		if (node == null){ 
-			node = (SimpleNode) NodeManager.instance.getNodeFromCoordonate(new Coordonate(xCoord, yCoord, zCoord, this.worldObj));
+			node = (SimpleNode) NodeManager.instance.getNodeFromCoordonate(new Coordonate(getPos(), this.worldObj));
 			if(node == null){
-				DelayedBlockRemove.add(new Coordonate(xCoord, yCoord, zCoord, this.worldObj));
+				DelayedBlockRemove.add(new Coordonate(getPos(), this.worldObj));
 				return null;
 			}
 		}
@@ -123,7 +123,7 @@ public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity
 	public void serverPublishUnserialize(DataInputStream stream) {
 		try {
 			if(front != (front = Direction.fromInt(stream.readByte()))){
-				worldObj.markBlockForUpdate(xCoord,yCoord,zCoord);
+				markDirty();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -143,7 +143,7 @@ public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity
     		Utils.println("ASSERT NULL NODE public Packet getDescriptionPacket() nodeblock entity");
     		return null;
     	}
-    	return new S3FPacketCustomPayload(Eln.channelName,node.getPublishPacket().toByteArray());
+    	return new SPacketCustomPayload(Eln.channelName, new PacketBuffer(node.getPublishPacket().toByteArray()));
     }
 
     

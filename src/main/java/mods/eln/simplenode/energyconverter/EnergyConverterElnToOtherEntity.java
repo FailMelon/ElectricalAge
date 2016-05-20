@@ -1,9 +1,6 @@
 package mods.eln.simplenode.energyconverter;
 
 import cofh.api.energy.IEnergyHandler;
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import ic2.api.energy.tile.IEnergySource;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Message;
@@ -16,7 +13,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.Optional;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class EnergyConverterElnToOtherEntity extends SimpleNodeEntity implements
 
 	@Optional.Method(modid = Other.modIdIc2)
 	@Override
-	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection direction) {
+	public boolean emitsEnergyTo(TileEntity receiver, EnumFacing direction) {
 		if (worldObj.isRemote)
 			return false;
 		SimpleNode n = getNode();
@@ -167,7 +167,7 @@ public class EnergyConverterElnToOtherEntity extends SimpleNodeEntity implements
 	// *************** RF **************
 	@Override
 	@Optional.Method(modid = Other.modIdTe)
-	public boolean canConnectEnergy(ForgeDirection from) {
+	public boolean canConnectEnergy(EnumFacing from) {
 		// Utils.println("*****canConnectEnergy*****");
 		// return true;
 		if (worldObj.isRemote)
@@ -180,14 +180,14 @@ public class EnergyConverterElnToOtherEntity extends SimpleNodeEntity implements
 
 	@Override
 	@Optional.Method(modid = Other.modIdTe)
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		// Utils.println("*****receiveEnergy*****");
 		return 0;
 	}
 
 	@Override
 	@Optional.Method(modid = Other.modIdTe)
-	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
+	public int extractEnergy(EnumFacing from, int maxExtract, boolean simulate) {
 		// Utils.println("*****extractEnergy*****");
 		if (worldObj.isRemote)
 			return 0;
@@ -203,14 +203,14 @@ public class EnergyConverterElnToOtherEntity extends SimpleNodeEntity implements
 
 	@Override
 	@Optional.Method(modid = Other.modIdTe)
-	public int getEnergyStored(ForgeDirection from) {
+	public int getEnergyStored(EnumFacing from) {
 		// Utils.println("*****getEnergyStored*****");
 		return 0;
 	}
 
 	@Override
 	@Optional.Method(modid = Other.modIdTe)
-	public int getMaxEnergyStored(ForgeDirection from) {
+	public int getMaxEnergyStored(EnumFacing from) {
 		// Utils.println("*****getMaxEnergyStored*****");
 		return 0;
 	}

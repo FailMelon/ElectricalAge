@@ -9,7 +9,6 @@ import mods.eln.misc.Color;
 import mods.eln.misc.Version;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 
 import java.util.*;
 

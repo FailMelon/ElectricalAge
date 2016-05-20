@@ -6,6 +6,7 @@ import mods.eln.misc.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class TreeResinCollectorTileEntity extends TileEntity{
 
@@ -20,7 +21,7 @@ public class TreeResinCollectorTileEntity extends TileEntity{
 	boolean onBlockActivated() {
 		if (worldObj.isRemote) return true;
 		while(occupancy >= 1f) {
-			Utils.dropItem(Eln.treeResin.newItemStack(1), xCoord, yCoord, zCoord, worldObj);
+			Utils.dropItem(Eln.treeResin.newItemStack(1), getPos(), worldObj);
 			occupancy -= 1f;
 		}
 		return true;
@@ -39,24 +40,24 @@ public class TreeResinCollectorTileEntity extends TileEntity{
 			int[] posWood = new int[3];
 			int[] posCollector = new int[3];
 			Direction woodDirection = Direction.fromIntMinecraftSide(getBlockMetadata()).getInverse();
-			posWood[0] = xCoord; 
-            posWood[1] = yCoord;
-            posWood[2] = zCoord;
-			posCollector[0] = xCoord;
-            posCollector[1] = yCoord;
-            posCollector[2] = zCoord;
+			posWood[0] = getPos().getX(); 
+            posWood[1] = getPos().getY(); 
+            posWood[2] = getPos().getZ(); 
+			posCollector[0] = getPos().getX();
+            posCollector[1] = getPos().getY();
+            posCollector[2] = getPos().getZ(); 
 			woodDirection.applyTo(posWood, 1);
 			
 			int yStart, yEnd;
 			
-			while (worldObj.getBlock(posWood[0], posWood[1] - 1, posWood[2]) == Blocks.log) {
+			while (worldObj.getBlockState(new BlockPos(posWood[0], posWood[1] - 1, posWood[2])).getBlock() == Blocks.log) {
 				posWood[1]--;
 			}
 			yStart = posWood[1];
 			
-			posWood[1] = yCoord;
+			posWood[1] = getPos().getY();
 			timeCounter-= timeTarget;
-			while(worldObj.getBlock(posWood[0],posWood[1]+1,posWood[2]) == Blocks.log)
+			while(worldObj.getBlockState(new BlockPos(posWood[0],posWood[1]+1,posWood[2])).getBlock() == Blocks.log)
 			{
 				posWood[1]++;
 			}

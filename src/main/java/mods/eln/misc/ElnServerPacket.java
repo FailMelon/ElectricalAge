@@ -1,12 +1,12 @@
 package mods.eln.misc;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
-public class ElnServerPacket extends Packet {
+public class ElnServerPacket implements Packet {
 
 	private String field_149172_a;
     private byte[] field_149171_b;
@@ -39,7 +39,7 @@ public class ElnServerPacket extends Packet {
 	  
     public void writePacketData(PacketBuffer p_148840_1_) {
 	    try {
-			p_148840_1_.writeStringToBuffer(this.field_149172_a);
+			p_148840_1_.writeString(this.field_149172_a);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

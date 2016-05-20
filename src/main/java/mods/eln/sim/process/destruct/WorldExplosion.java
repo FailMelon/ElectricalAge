@@ -55,7 +55,7 @@ public class WorldExplosion implements IDestructable {
 		if (Eln.instance.explosionEnable)
 			c.world().createExplosion((Entity)null, c.x, c.y, c.z, strength, true);
 		else
-			c.world().setBlock(c.x, c.y, c.z, Blocks.air);
+			c.world().setBlockState(c.getBlockPos(), Blocks.air.getDefaultState());
 	}
 
 	@Override

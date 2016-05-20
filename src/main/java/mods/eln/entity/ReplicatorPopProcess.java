@@ -1,14 +1,15 @@
 package mods.eln.entity;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import mods.eln.misc.Utils;
 import mods.eln.sim.IProcess;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.Random;
 
@@ -35,7 +36,7 @@ public class ReplicatorPopProcess implements IProcess {
 			}
 		}
 
-		if(world.difficultySetting == EnumDifficulty.PEACEFUL) return;
+		if(world.getWorldInfo().getDifficulty() == EnumDifficulty.PEACEFUL) return;
 		
 		if (world.getWorldInfo().isThundering()) {
 	        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();       
@@ -48,9 +49,9 @@ public class ReplicatorPopProcess implements IProcess {
 					y = 2;
 					Utils.println("POP");
 
-					if(world.blockExists(x, y, z) == false) break;
+					if(world.isBlockLoaded(new BlockPos(x, y, z)) == false) break;
 
-					while (world.getBlock(x, y, z) != Blocks.air || Utils.getLight(world, EnumSkyBlock.Block, x, y, z) > 6) {
+					while (world.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.air || Utils.getLight(world, EnumSkyBlock.BLOCK, x, y, z) > 6) {
 						y++;
 					}
 

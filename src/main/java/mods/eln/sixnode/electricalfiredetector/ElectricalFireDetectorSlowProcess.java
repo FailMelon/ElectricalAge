@@ -6,6 +6,7 @@ import mods.eln.misc.Utils;
 import mods.eln.sim.IProcess;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFire;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,8 +64,8 @@ public class ElectricalFireDetectorSlowProcess implements IProcess {
             for (int dx = -maxRangeHalf; dx <= maxRangeHalf; ++dx)
                 for (int dy = -maxRangeHalf; dy <= maxRangeHalf; ++dy)
                     for (int dz = -maxRangeHalf; dz <= maxRangeHalf; ++dz) {
-                        Block block = detectionBBCenter.world().getBlock(detectionBBCenter.x + dx, detectionBBCenter.y + dy,
-                                detectionBBCenter.z + dz);
+                        Block block = detectionBBCenter.world().getBlockState(new BlockPos(detectionBBCenter.x + dx, detectionBBCenter.y + dy,
+                                detectionBBCenter.z + dz)).getBlock();
                         if (block.getClass() == BlockFire.class) {
                             fireDetected = true;
 
@@ -73,7 +74,7 @@ public class ElectricalFireDetectorSlowProcess implements IProcess {
                                     detectionBBCenter.x + dx + 0.5, detectionBBCenter.y + dy + 0.5, detectionBBCenter.z + dz + 0.5);
 
                             for (Block b : blockList)
-                                if (b.isOpaqueCube()) {
+                                if (b.isOpaqueCube(b.getDefaultState())) {
                                     fireDetected = false;
                                     break;
                                 }

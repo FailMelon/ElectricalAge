@@ -1,15 +1,5 @@
 package mods.eln;
 
-import cpw.mods.fml.common.*;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.*;
-import cpw.mods.fml.common.network.FMLEventChannel;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import mods.eln.achievepackets.AchievePacket;
 import mods.eln.achievepackets.AchievePacketHandler;
 import mods.eln.cable.CableRenderDescriptor;
@@ -163,10 +153,31 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.network.FMLEventChannel;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -458,7 +469,7 @@ public class Eln {
 		Item itemCreativeTab = new Item()
 				.setUnlocalizedName("eln:elncreativetab")
 				.setTextureName("eln:elncreativetab");
-		GameRegistry.registerItem(itemCreativeTab, "eln.itemCreativeTab");
+		GameRegistry.register(itemCreativeTab, new ResourceLocation("eln.itemCreativeTab"));
 		creativeTab = new GenericCreativeTab("Eln", itemCreativeTab);
 
 		oreBlock = (OreBlock) new OreBlock().setCreativeTab(creativeTab).setBlockName("OreEln");
@@ -486,13 +497,13 @@ public class Eln {
 
 		obj.loadAllElnModels();
 
-		GameRegistry.registerItem(sharedItem, "Eln.sharedItem");
-		GameRegistry.registerItem(sharedItemStackOne, "Eln.sharedItemStackOne");
-		GameRegistry.registerBlock(ghostBlock, "Eln.ghostBlock");
-		GameRegistry.registerBlock(lightBlock, "Eln.lightBlock");
-		GameRegistry.registerBlock(sixNodeBlock, SixNodeItem.class, "Eln.SixNode");
-		GameRegistry.registerBlock(transparentNodeBlock, TransparentNodeItem.class, "Eln.TransparentNode");
-		GameRegistry.registerBlock(oreBlock, OreItem.class, "Eln.Ore");
+		GameRegistry.register(sharedItem, new ResourceLocation("Eln.sharedItem"));
+		GameRegistry.register(sharedItemStackOne, new ResourceLocation("Eln.sharedItemStackOne"));
+		GameRegistry.register(ghostBlock, new ResourceLocation("Eln.ghostBlock"));
+		GameRegistry.register(lightBlock, new ResourceLocation("Eln.lightBlock"));
+		GameRegistry.register(sixNodeBlock, SixNodeItem.class, new ResourceLocation("Eln.SixNode"));
+		GameRegistry.register(transparentNodeBlock, TransparentNodeItem.class, "Eln.TransparentNode");
+		GameRegistry.register(oreBlock, OreItem.class, "Eln.Ore");
 		TileEntity.addMapping(TransparentNodeEntity.class, "TransparentNodeEntity");
 		TileEntity.addMapping(TransparentNodeEntityWithFluid.class, "TransparentNodeEntityWF");
 		// TileEntity.addMapping(TransparentNodeEntityWithSiededInv.class, "TransparentNodeEntityWSI");
@@ -734,7 +745,7 @@ public class Eln {
 		}
 
 		MinecraftForge.EVENT_BUS.register(new ElnForgeEventsHandler());
-		FMLCommonHandler.instance().bus().register(new ElnFMLEventsHandler());
+		MinecraftForge.EVENT_BUS.register(new ElnFMLEventsHandler());
 
 		Utils.println("Electrical age init done");
 	}
@@ -991,8 +1002,7 @@ public class Eln {
 		}
 
 		{
-			MinecraftServer s = MinecraftServer.getServer();
-			ICommandManager command = s.getCommandManager();
+			ICommandManager command = ev.getServer().getCommandManager();
 			ServerCommandManager manager = (ServerCommandManager) command;
 			manager.registerCommand(new ConsoleListener());
 		}
@@ -6767,7 +6777,7 @@ public class Eln {
 			replicatorRegistrationId = EntityRegistry.findGlobalUniqueEntityId();
 		Utils.println("Replicator registred at" + replicatorRegistrationId);
 		// Register mob
-		EntityRegistry.registerGlobalEntityID(ReplicatorEntity.class, TR_NAME(Type.ENTITY, "EAReplicator"), replicatorRegistrationId, redColor, orangeColor);
+		EntityRegistry.registerModEntity(ReplicatorEntity.class, TR_NAME(Type.ENTITY, "EAReplicator"), replicatorRegistrationId, redColor, orangeColor);
 
 		ReplicatorEntity.dropList.add(findItemStack("Iron Dust", 1));
 		ReplicatorEntity.dropList.add(findItemStack("Copper Dust", 1));

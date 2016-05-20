@@ -1,13 +1,13 @@
 package mods.eln.client;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.RenderTickEvent;
 import mods.eln.misc.Utils;
 import mods.eln.node.NodeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 import java.util.Iterator;
 
@@ -15,7 +15,7 @@ public class FrameTime {
 	static FrameTime instance;
 	public FrameTime() {
 		instance = this;
-		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	public void init() {
@@ -64,7 +64,7 @@ public class FrameTime {
 			float deltaTcaped = getNotCaped2();
 			while(i.hasNext()){
 				NodeBlockEntity e = i.next();
-				if(e.getWorldObj() != w) {
+				if(e.getWorld() != w) {
 					i.remove();
 					continue;
 				}

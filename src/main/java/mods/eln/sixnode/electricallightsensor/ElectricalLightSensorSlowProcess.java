@@ -3,7 +3,7 @@ package mods.eln.sixnode.electricallightsensor;
 import mods.eln.misc.Coordonate;
 import mods.eln.misc.Utils;
 import mods.eln.sim.IProcess;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
@@ -32,8 +32,8 @@ public class ElectricalLightSensorSlowProcess implements IProcess {
 			World world = coord.world();
 			int light = 0;
 			//if(element.descriptor.dayLightOnly) {
-		        if (!world.provider.hasNoSky) {
-		            int i1 = world.getSavedLightValue(EnumSkyBlock.Sky, coord.x, coord.y, coord.z) - world.skylightSubtracted;
+		        if (!world.provider.getHasNoSky()) {
+		            int i1 = world.getSavedLightValue(EnumSkyBlock.SKY, coord.getBlockPos()) - world.getSkylightSubtracted();
 		            i1 = Math.max(0, i1);
 		            float f = world.getCelestialAngleRadians(1.0F);
 	
@@ -59,7 +59,7 @@ public class ElectricalLightSensorSlowProcess implements IProcess {
 			if (!element.descriptor.dayLightOnly) {
 				// light = Math.max(light, (int)(world.getBlockLightValue(coord.x, coord.y, coord.z)));
 				//light = 0;
-				light = Math.max(light, Utils.getLight(world,EnumSkyBlock.Block, coord.x, coord.y, coord.z));
+				light = Math.max(light, Utils.getLight(world,EnumSkyBlock.BLOCK, coord.x, coord.y, coord.z));
 			}
 			element.outputGateProcess.setOutputNormalized(light / 15.0);
 		}

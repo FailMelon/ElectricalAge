@@ -1,7 +1,5 @@
 package mods.eln.ghost;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import mods.eln.Eln;
 import mods.eln.misc.Coordonate;
 import mods.eln.misc.Direction;
@@ -11,9 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -40,7 +36,7 @@ public class GhostBlock extends Block {
 
 		switch (meta) {
 		case tFloor:
-			AxisAlignedBB axisalignedbb1 = AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z, (double) x + 1, (double) y + 0.0625, (double) z + 1);
+			AxisAlignedBB axisalignedbb1 = new AxisAlignedBB((double) x, (double) y, (double) z, (double) x + 1, (double) y + 0.0625, (double) z + 1);
 			if (axisalignedbb1 != null && par5AxisAlignedBB.intersectsWith(axisalignedbb1)) {
 				list.add(axisalignedbb1);
 			}
@@ -61,9 +57,9 @@ public class GhostBlock extends Block {
 
 		switch (meta) {
 		case tFloor:
-			return AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z, (double) x + 1, (double) y + 0.0625, (double) z + 1);
+			return new AxisAlignedBB((double) x, (double) y, (double) z, (double) x + 1, (double) y + 0.0625, (double) z + 1);
 		case tLadder:
-			return AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z, (double) x + 0, (double) y + 0.0, (double) z + 0);
+			return new AxisAlignedBB((double) x, (double) y, (double) z, (double) x + 0, (double) y + 0.0, (double) z + 0);
 		default:
 			return super.getSelectedBoundingBoxFromPool(w, x, y, z);
 		}

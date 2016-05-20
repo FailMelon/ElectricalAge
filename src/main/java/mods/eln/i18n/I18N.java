@@ -1,7 +1,6 @@
 package mods.eln.i18n;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.LanguageRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Internationalization and localization helper class.

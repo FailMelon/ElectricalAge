@@ -29,7 +29,7 @@ public class NodeBlockItem extends ItemBlock {
 	/*int getBlockID(){
 		return Block.getIdFromBlock(getBlock());
 	}*/
-	NodeBlock getBlock(){
+	public NodeBlock getBlock(){
 		return (NodeBlock) Block.getBlockFromItem(this);
 	}
 

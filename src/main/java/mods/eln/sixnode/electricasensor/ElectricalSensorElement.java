@@ -199,7 +199,7 @@ public class ElectricalSensorElement extends SixNodeElement {
 
 	@Override
 	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
-		ItemStack currentItemStack = entityPlayer.getCurrentEquippedItem();
+		ItemStack currentItemStack = entityPlayer.getHeldItemMainhand();
 
 		if (Utils.isPlayerUsingWrench(entityPlayer)) {
 			front = front.getNextClockwise();

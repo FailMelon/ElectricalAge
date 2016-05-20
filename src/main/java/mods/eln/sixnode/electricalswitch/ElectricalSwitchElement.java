@@ -145,20 +145,20 @@ public class ElectricalSwitchElement extends SixNodeElement {
 
 	@Override
 	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
-		ItemStack currentItemStack = entityPlayer.getCurrentEquippedItem();
+		ItemStack currentItemStack = entityPlayer.getHeldItemMainhand();
 		
 		if (Utils.isPlayerUsingWrench(entityPlayer)) {
 			front = front.getNextClockwise();
 			sixNode.reconnect();
 			sixNode.setNeedPublish(true);
 			return true;	
-		} else if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		} else if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
     		return false;
     	}
-    	if(Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) { 
+    	if(Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) { 
     		return false;
     	}
-    	if(Eln.allMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+    	if(Eln.allMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
     		return false;
     	} else {
 			setSwitchState(!switchState);

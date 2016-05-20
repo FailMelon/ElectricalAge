@@ -84,7 +84,7 @@ public class ThermalDissipatorPassiveElement extends TransparentNodeElement{
 	@Override
 	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side,
 			float vx, float vy, float vz) {
-		ItemStack stack = entityPlayer.getCurrentEquippedItem();
+		ItemStack stack = entityPlayer.getHeldItemMainhand();
 		if(stack == null) return false;
 		if(stack.getItem() == Items.water_bucket)
 		{

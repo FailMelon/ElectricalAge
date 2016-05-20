@@ -6,6 +6,7 @@ import mods.eln.misc.Utils;
 import mods.eln.sim.IProcess;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 class WindTurbineSlowProcess implements IProcess, INBTTReady {
@@ -67,11 +68,11 @@ class WindTurbineSlowProcess implements IProcess, INBTTReady {
                 for (int x = x1; x <= x2; x++) {
                     for (int y = y1; y <= y2; y++) {
                         for (int z = z1; z <= z2; z++) {
-                            if (!world.blockExists(x, y, z)) {
+                            if (!world.isBlockLoaded(new BlockPos(x, y, z))) {
                                 notInCache = true;
                                 break;
                             }
-                            if (world.getBlock(x, y, z) != Blocks.air) {
+                            if (world.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.air) {
                                 blockBusyCount++;
                             }
                         }

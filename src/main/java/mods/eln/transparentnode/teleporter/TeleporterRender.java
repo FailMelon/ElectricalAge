@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 
 import mods.eln.Eln;
 import mods.eln.client.FrameTime;
@@ -51,7 +52,7 @@ public class TeleporterRender extends TransparentNodeElementRender{
 		Coordonate lightCoordonate = new Coordonate(this.d.lightCoordonate);
 		lightCoordonate.applyTransformation(front, c);
 		
-		boolean lightEnable = tileEntity.getWorldObj().getBlock(lightCoordonate.x, lightCoordonate.y, lightCoordonate.z) == Eln.lightBlock;
+		boolean lightEnable = tileEntity.getWorld().getBlockState(new BlockPos(lightCoordonate.x, lightCoordonate.y, lightCoordonate.z)).getBlock() == Eln.lightBlock;
 		
 
 		
@@ -126,7 +127,7 @@ public class TeleporterRender extends TransparentNodeElementRender{
 				d.scr1_cables.draw();
 				d.scr2_transporter.draw();
 				
-				if(!tileEntity.getWorldObj().getEntitiesWithinAABB(Entity.class, d.getBB(c, front)).isEmpty())
+				if(!tileEntity.getWorld().getEntitiesWithinAABB(Entity.class, d.getBB(c, front)).isEmpty())
 					d.scr3_userin.draw();
 				
 				if(doorState)

@@ -264,7 +264,7 @@ public class LampSocketElement extends SixNodeElement {
 			return true;
 		}
 
-		ItemStack currentItemStack = entityPlayer.getCurrentEquippedItem();
+		ItemStack currentItemStack = entityPlayer.getHeldItemMainhand();
 		if (currentItemStack != null) {
 			Item item = currentItemStack.getItem();
 

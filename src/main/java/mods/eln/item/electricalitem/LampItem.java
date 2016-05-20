@@ -4,8 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import mods.eln.Eln;
 import mods.eln.generic.GenericItemUsingDamageDescriptor;
@@ -31,11 +32,9 @@ public abstract class LampItem extends GenericItemUsingDamageDescriptor {
 		for(int yOffset = 0; yOffset < 2; yOffset++) {
 			double x = entity.posX, y = entity.posY + 1.62 - yOffset, z = entity.posZ;
 		
-			Vec3 v = entity.getLookVec();
-			
-			v.xCoord *= 0.25;
-			v.yCoord *= 0.25;
-			v.zCoord *= 0.25;
+			Vec3d v = entity.getLookVec();
+						
+			v = new Vec3d(v.xCoord * 0.25, v.yCoord * 0.25, v.zCoord * 0.25f);
 
 			int range = getRange(stack) + 1;
 			int rCount = 0;
@@ -45,7 +44,7 @@ public abstract class LampItem extends GenericItemUsingDamageDescriptor {
 				y += v.yCoord;
 				z += v.zCoord;
 		
-				Block block = world.getBlock(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+				Block block = world.getBlockState(new BlockPos(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))).getBlock();
 				if(block != Blocks.air && block != Eln.instance.lightBlock /*&& Block.blocksList[blockId].isOpaqueCube() == false*/){
 					x -= v.xCoord;
 					y -= v.yCoord;
@@ -56,7 +55,7 @@ public abstract class LampItem extends GenericItemUsingDamageDescriptor {
 			}
 
 			while(rCount > 0) {
-				Block block = world.getBlock(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+				Block block = world.getBlockState(new BlockPos(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))).getBlock();
 				if(block == Blocks.air || block == Eln.instance.lightBlock) {
 					//break;
 					LightBlockEntity.addLight(world, MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z), light, 10);

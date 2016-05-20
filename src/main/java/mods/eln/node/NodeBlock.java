@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -71,7 +72,7 @@ public abstract class NodeBlock extends Block {//BlockContainer
 
     public int getLightValue(IBlockAccess world, int x, int y, int z) 
     {
-		final TileEntity entity = world.getTileEntity(x, y, z);
+		final TileEntity entity = world.getTileEntity(new BlockPos(x, y, z));
 		if (entity == null || !(entity instanceof NodeBlockEntity)) return 0;
 		NodeBlockEntity tileEntity = (NodeBlockEntity) entity;
 		return tileEntity.getLightValue();
@@ -83,7 +84,7 @@ public abstract class NodeBlock extends Block {//BlockContainer
     public boolean onBlockPlacedBy(World world, int x, int y, int z, Direction front,EntityLivingBase entityLiving,int metadata)
     {
 
-    	NodeBlockEntity tileEntity = (NodeBlockEntity) world.getTileEntity(x, y, z);
+    	NodeBlockEntity tileEntity = (NodeBlockEntity) world.getTileEntity(new BlockPos(x, y, z));
 
 		tileEntity.onBlockPlacedBy(front,entityLiving,metadata);
 		return true;
@@ -94,7 +95,7 @@ public abstract class NodeBlock extends Block {//BlockContainer
     {
     	if(par1World.isRemote == false)
     	{
-    		NodeBlockEntity entity = (NodeBlockEntity) par1World.getTileEntity(x, y, z);
+    		NodeBlockEntity entity = (NodeBlockEntity) par1World.getTileEntity(new BlockPos(x, y, z));
     		entity.onBlockAdded();
     	}   	
     }
@@ -107,16 +108,16 @@ public abstract class NodeBlock extends Block {//BlockContainer
     	
     	//if(par1World.isRemote == false)
     	{
-    		NodeBlockEntity entity = (NodeBlockEntity) par1World.getTileEntity(x, y, z);
+    		NodeBlockEntity entity = (NodeBlockEntity) par1World.getTileEntity(new BlockPos(x, y, z));
 	    	entity.onBreakBlock();
 	        super.breakBlock(par1World, x, y, z, par5, par6);
     	}
     }
     @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z,Block b) {
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
     	if(Utils.isRemote(world) == false)
     	{
-    		NodeBlockEntity entity = (NodeBlockEntity) world.getTileEntity(x, y, z);
+    		NodeBlockEntity entity = (NodeBlockEntity) world.getTileEntity(new BlockPos(x, y, z));
 	    	entity.onNeighborBlockChange();
     	}
     }

@@ -6,7 +6,7 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.SimpleComponent;
 import mods.eln.Other;
 import mods.eln.node.simple.SimpleNodeEntity;
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 
 @Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = Other.modIdOc)
 public class ComputerProbeEntity extends SimpleNodeEntity implements SimpleComponent {

@@ -6,8 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-
 import mods.eln.Eln;
 import mods.eln.misc.Coordonate;
 import mods.eln.misc.Direction;
@@ -33,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerManager;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -48,7 +47,7 @@ public abstract class Node extends NodeBase {
 		if(lastLight != light)
 		{
 			lastLight = light;
-			coordonate.world().updateLightByType(EnumSkyBlock.Block,coordonate.x, coordonate.y, coordonate.z);
+			coordonate.world().updateLightByType(EnumSkyBlock.BLOCK,coordonate.x, coordonate.y, coordonate.z);
 			setNeedPublish(true);
 		}
 		
@@ -98,7 +97,7 @@ public abstract class Node extends NodeBase {
     
     public NodeBlockEntity getEntity()
     {
-    	return (NodeBlockEntity) coordonate.world().getTileEntity(coordonate.x, coordonate.y, coordonate.z);
+    	return (NodeBlockEntity) coordonate.world().getTileEntity(new BlockPos(coordonate.x, coordonate.y, coordonate.z));
     }
     
 	public int isProvidingWeakPower(Direction side) {

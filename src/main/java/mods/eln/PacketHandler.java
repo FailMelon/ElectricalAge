@@ -1,8 +1,5 @@
 package mods.eln;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import io.netty.channel.ChannelHandler.Sharable;
 import mods.eln.client.ClientKeyHandler;
 import mods.eln.client.ClientProxy;
@@ -20,6 +17,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ServerCustomPacketEvent;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import java.io.*;
 
@@ -33,10 +34,10 @@ public class PacketHandler {
 
     @SubscribeEvent
     public void onServerPacket(ServerCustomPacketEvent event) {
-        FMLProxyPacket packet = event.packet;
+        FMLProxyPacket packet = event.getPacket();
         DataInputStream stream = new DataInputStream(new ByteArrayInputStream(packet.payload().array()));
-        NetworkManager manager = event.manager;
-        EntityPlayer player = ((NetHandlerPlayServer) event.handler).playerEntity; // EntityPlayerMP
+        NetworkManager manager = event.getManager();
+        EntityPlayer player = ((NetHandlerPlayServer) event.getHandler()).playerEntity; // EntityPlayerMP
 
         packetRx(stream, manager, player);
     }
@@ -165,7 +166,7 @@ public class PacketHandler {
 
 
             if (clientPlayer.dimension == dimention) {
-                TileEntity entity = clientPlayer.worldObj.getTileEntity(x, y, z);
+                TileEntity entity = clientPlayer.worldObj.getTileEntity(new BlockPos(x, y, z));
                 if (entity != null && entity instanceof INodeEntity) {
                     INodeEntity node = (INodeEntity) entity;
                     if (node.getNodeUuid().equals(stream.readUTF())) {
@@ -198,7 +199,7 @@ public class PacketHandler {
             dimention = stream.readByte();
 
             if (clientPlayer.dimension == dimention) {
-                TileEntity entity = clientPlayer.worldObj.getTileEntity(x, y, z);
+                TileEntity entity = clientPlayer.worldObj.getTileEntity(new BlockPos(x, y, z));
                 if (entity != null && entity instanceof INodeEntity) {
                     INodeEntity node = (INodeEntity) entity;
                     if (node.getNodeUuid().equals(stream.readUTF())) {

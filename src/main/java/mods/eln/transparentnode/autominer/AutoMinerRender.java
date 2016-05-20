@@ -113,7 +113,7 @@ public class AutoMinerRender extends TransparentNodeElementRender {
 			GL11.glScalef(1 / 128f, -1 / 128f, 1);
 			int idx = 0;
 			for (String log : logs) {
-				Minecraft.getMinecraft().fontRenderer.drawString(idx == 0 ? Color.COLOR_BRIGHT_GREEN+"> "+log.substring(2) : Color.COLOR_DARK_GREEN+log, 80, 1 + idx, 0xFFD0D0D0 /*No effect...*/);
+				Minecraft.getMinecraft().fontRendererObj.drawString(idx == 0 ? Color.COLOR_BRIGHT_GREEN+"> "+log.substring(2) : Color.COLOR_DARK_GREEN+log, 80, 1 + idx, 0xFFD0D0D0 /*No effect...*/);
 				idx += 8;
 			}
 			GL11.glPopMatrix();
@@ -170,7 +170,7 @@ public class AutoMinerRender extends TransparentNodeElementRender {
                     case ZN: camAlpha = (float)(-Math.PI / 2); break;
                     case ZP: camAlpha = (float)(Math.PI / 2); break;
 				}
-				render.generate(this.tileEntity.getWorldObj(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5 - (Math.max(0, pipeLength-5)), tileEntity.zCoord + 0.5, -(float) (Math.PI * 1 / 2) + camAlpha, -(float) (Math.PI / 2));
+				render.generate(this.tileEntity.getWorld(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5 - (Math.max(0, pipeLength-5)), tileEntity.zCoord + 0.5, -(float) (Math.PI * 1 / 2) + camAlpha, -(float) (Math.PI / 2));
 			}
 		}
         

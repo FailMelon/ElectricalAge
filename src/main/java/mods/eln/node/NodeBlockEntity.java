@@ -13,11 +13,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import mods.eln.Eln;
 import mods.eln.cable.CableRender;
 import mods.eln.cable.CableRenderDescriptor;
@@ -44,14 +39,17 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 public abstract class NodeBlockEntity extends TileEntity implements ITileEntitySpawnClient, INodeEntity {
@@ -82,7 +80,7 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
             boolean newRedstone = (b & 0x10) != 0;
             if (redstone != newRedstone) {
                 redstone = newRedstone;
-                worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
+                markDirty();
             } else {
                 redstone = newRedstone;
             }
@@ -139,8 +137,9 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
 
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        if (cameraDrawOptimisation()) {
-            return AxisAlignedBB.getBoundingBox(xCoord - 1, yCoord - 1, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
+        if (cameraDrawOptimisation())
+        {
+            return new AxisAlignedBB(xCoord - 1, yCoord - 1, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
         } else {
             return INFINITE_EXTENT_AABB;
         }
@@ -214,7 +213,7 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
 
     public void onBlockAdded() {
         if (!worldObj.isRemote && getNode() == null) {
-            worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+            worldObj.setBlockToAir(getPos());
         }
     }
 
@@ -273,8 +272,8 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
         }
         if (this.worldObj == null) return null;
         if (node == null) {
-            node = (Node) NodeManager.instance.getNodeFromCoordonate(new Coordonate(xCoord, yCoord, zCoord, this.worldObj));
-            if (node == null) DelayedBlockRemove.add(new Coordonate(xCoord, yCoord, zCoord, this.worldObj));
+            node = (Node) NodeManager.instance.getNodeFromCoordonate(new Coordonate(getPos(), this.worldObj));
+            if (node == null) DelayedBlockRemove.add(new Coordonate(getPos(), this.worldObj));
         }
         return node;
     }
@@ -282,7 +281,7 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
 
     public static NodeBlockEntity getEntity(int x, int y, int z) {
         TileEntity entity;
-        if ((entity = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z)) != null) {
+        if ((entity = Minecraft.getMinecraft().theWorld.getTileEntity(new BlockPos(x, y, z))) != null) {
             if (entity instanceof NodeBlockEntity) {
                 return (NodeBlockEntity) entity;
             }
@@ -298,7 +297,7 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
             Utils.println("ASSERT NULL NODE public Packet getDescriptionPacket() nodeblock entity");
             return null;
         }
-        return new S3FPacketCustomPayload(Eln.channelName, node.getPublishPacket().toByteArray());
+        return new SPacketCustomPayload(Eln.channelName, node.getPublishPacket().toByteArray());
         //return null;
     }
 
@@ -307,11 +306,11 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
         try {
             stream.writeByte(Eln.packetPublishForNode);
 
-            stream.writeInt(xCoord);
-            stream.writeInt(yCoord);
-            stream.writeInt(zCoord);
+            stream.writeInt(getPos().getX());
+            stream.writeInt(getPos().getY());
+            stream.writeInt(getPos().getZ());
 
-            stream.writeByte(worldObj.provider.dimensionId);
+            stream.writeByte(worldObj.provider.getDimension());
 
             stream.writeUTF(getNodeUuid());
 

@@ -1,9 +1,5 @@
 package mods.eln.server;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import li.cil.oc.api.network.Node;
 import mods.eln.Eln;
 import mods.eln.misc.Coordonate;
@@ -19,6 +15,10 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+
 import org.lwjgl.Sys;
 
 import java.io.*;
@@ -32,7 +32,6 @@ public class ServerEventListener {
 
     public ServerEventListener() {
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
     }
 
     @SubscribeEvent
@@ -45,8 +44,8 @@ public class ServerEventListener {
 
     @SubscribeEvent
     public void onNewEntity(EntityConstructing event) {
-        if (event.entity instanceof EntityLightningBolt) {
-            lightningListNext.add((EntityLightningBolt) event.entity);
+        if (event.getEntity() instanceof EntityLightningBolt) {
+            lightningListNext.add((EntityLightningBolt) event.getEntity());
         }
     }
 
@@ -66,37 +65,37 @@ public class ServerEventListener {
 
 
     public String getEaWorldSaveName(World w) {
-        return Utils.getMapFolder() + "data/electricalAgeWorld" + w.provider.dimensionId + ".dat";
+        return Utils.getMapFolder() + "data/electricalAgeWorld" + w.provider.getDimension() + ".dat";
     }
     public HashSet<Integer> loadedWorlds = new HashSet<Integer>();
     @SubscribeEvent
     public void onWorldLoad(Load e) {
-        if (e.world.isRemote) return;
-        loadedWorlds.add(e.world.provider.dimensionId);
+        if (e.getWorld().isRemote) return;
+        loadedWorlds.add(e.getWorld().provider.getDimension());
         try {
-            FileInputStream fileStream = new FileInputStream(getEaWorldSaveName(e.world));
+            FileInputStream fileStream = new FileInputStream(getEaWorldSaveName(e.getWorld()));
             NBTTagCompound nbt = CompressedStreamTools.readCompressed(fileStream);
             readFromEaWorldNBT(nbt);
             fileStream.close();
         } catch (Exception ex) {
             try {
-                FileInputStream fileStream = new FileInputStream(getEaWorldSaveName(e.world) + "back");
+                FileInputStream fileStream = new FileInputStream(getEaWorldSaveName(e.getWorld()) + "back");
                 NBTTagCompound nbt = CompressedStreamTools.readCompressed(fileStream);
                 readFromEaWorldNBT(nbt);
                 fileStream.close();
             } catch (Exception ex2) {
-                ElnWorldStorage storage = ElnWorldStorage.forWorld(e.world);
+                ElnWorldStorage storage = ElnWorldStorage.forWorld(e.getWorld());
             }
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(Unload e) {
-        if (e.world.isRemote) return;
-        loadedWorlds.remove(e.world.provider.dimensionId);
+        if (e.getWorld().isRemote) return;
+        loadedWorlds.remove(e.getWorld().provider.getDimension());
         try {
-            NodeManager.instance.unload(e.world.provider.dimensionId);
-            Eln.ghostManager.unload(e.world.provider.dimensionId);
+            NodeManager.instance.unload(e.getWorld().provider.getDimension());
+            Eln.ghostManager.unload(e.getWorld().provider.getDimension());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -105,14 +104,14 @@ public class ServerEventListener {
 
     @SubscribeEvent
     public void onWorldSave(Save e) {
-        if (e.world.isRemote) return;
-        if(!loadedWorlds.contains(e.world.provider.dimensionId)) {
+        if (e.getWorld().isRemote) return;
+        if(!loadedWorlds.contains(e.getWorld().provider.getDimension())) {
             //System.out.println("I hate you minecraft");
             return;
         }
         try {
             NBTTagCompound nbt = new NBTTagCompound();
-            writeToEaWorldNBT(nbt, e.world.provider.dimensionId);
+            writeToEaWorldNBT(nbt, e.getWorld().provider.getDimension());
 
 //            File oldBackup = new File(getEaWorldSaveName(e.world) + "back");
 //            if (oldBackup.exists()) {
@@ -124,7 +123,7 @@ public class ServerEventListener {
 //                oldSave.renameTo(oldBackup);
 //            }
 
-            FileOutputStream fileStream = new FileOutputStream(getEaWorldSaveName(e.world));
+            FileOutputStream fileStream = new FileOutputStream(getEaWorldSaveName(e.getWorld()));
             CompressedStreamTools.writeCompressed(nbt, fileStream);
             fileStream.flush();
             fileStream.close();

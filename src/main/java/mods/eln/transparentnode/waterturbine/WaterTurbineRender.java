@@ -101,11 +101,11 @@ public class WaterTurbineRender extends TransparentNodeElementRender {
 			e.printStackTrace();
 		}
 
-		waterCoord = this.descriptor.getWaterCoordonate(tileEntity.getWorldObj());
-		waterCoord.setWorld(tileEntity.getWorldObj());
+		waterCoord = this.descriptor.getWaterCoordonate(tileEntity.getWorld());
+		waterCoord.setWorld(tileEntity.getWorld());
 		waterCoord.applyTransformation(front, coordonate());
 		waterCoordRight = new Coordonate(waterCoord);
-		waterCoordRight.setWorld(tileEntity.getWorldObj());
+		waterCoordRight.setWorld(tileEntity.getWorld());
 		waterCoordRight.move(front.right());
 	}
 }

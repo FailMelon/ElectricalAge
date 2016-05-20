@@ -1,14 +1,14 @@
 package mods.eln.sim;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import mods.eln.misc.Utils;
 import mods.eln.sim.mna.RootSystem;
 import mods.eln.sim.mna.component.Component;
 import mods.eln.sim.mna.state.State;
 import mods.eln.sim.process.destruct.IDestructable;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class Simulator /* ,IPacketHandler */{
 		this.electricalInterSystemOverSampling = electricalInterSystemOverSampling;
 		this.thermalPeriod = thermalPeriod;
 
-		FMLCommonHandler.instance().bus().register(this);
+		MinecraftForge.EVENT_BUS.register(this);
 
 		mna = new RootSystem(electricalPeriod, electricalInterSystemOverSampling);
 

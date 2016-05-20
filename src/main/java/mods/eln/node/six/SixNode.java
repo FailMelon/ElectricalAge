@@ -540,7 +540,7 @@ public class SixNode extends Node {
 		else
 		{
 
-			ItemStack stack = entityPlayer.getCurrentEquippedItem();
+			ItemStack stack = entityPlayer.getHeldItemMainhand();
 
 			Block b = Blocks.air;
 			if(stack != null)
@@ -576,7 +576,7 @@ public class SixNode extends Node {
 
 				//if(sixNodeCacheMapId != sixNodeCacheMapIdOld)
 				{
-					Chunk chunk = coordonate.world().getChunkFromBlockCoords(coordonate.x, coordonate.z);
+					Chunk chunk = coordonate.world().getChunkFromBlockCoords(coordonate.getBlockPos());
 					Utils.generateHeightMap(chunk);
 					Utils.updateSkylight(chunk);
 					chunk.generateSkylightMap();

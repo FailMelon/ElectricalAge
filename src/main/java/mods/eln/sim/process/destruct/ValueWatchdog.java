@@ -1,6 +1,6 @@
 package mods.eln.sim.process.destruct;
 
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 import mods.eln.misc.Utils;
 import mods.eln.sim.IProcess;
 

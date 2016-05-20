@@ -24,8 +24,8 @@ public class ElnWorldStorage extends WorldSavedData {
 
     public static ElnWorldStorage forWorld(World world) {
         // Retrieves the MyWorldData instance for the given world, creating it if necessary
-        MapStorage storage = world.perWorldStorage;
-        int dim = world.provider.dimensionId;
+        MapStorage storage = world.getPerWorldStorage();
+        int dim = world.provider.getDimension();
         ElnWorldStorage result = (ElnWorldStorage) storage.loadData(ElnWorldStorage.class, key + dim);
         if (result == null) {
             result = (ElnWorldStorage) storage.loadData(ElnWorldStorage.class, key + dim + "back");

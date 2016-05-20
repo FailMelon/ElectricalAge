@@ -2,8 +2,9 @@ package mods.eln.misc;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import org.lwjgl.opengl.GL11;
 
@@ -114,12 +115,12 @@ public enum Direction {
 	 */
 	public TileEntity applyToTileEntity(TileEntity tileEntity) {
 		if(tileEntity == null)return null;
-		int coords[] = { tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord };
+		int coords[] = { tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ() };
 		
 		coords[dir / 2] += getSign();
 		
-		if (tileEntity.getWorldObj() != null && tileEntity.getWorldObj().blockExists(coords[0], coords[1], coords[2])) {
-			return tileEntity.getWorldObj().getTileEntity(coords[0], coords[1], coords[2]);
+		if (tileEntity.getWorld() != null && tileEntity.getWorld().isBlockLoaded(new BlockPos(coords[0], coords[1], coords[2]))) {
+			return tileEntity.getWorld().getTileEntity(new BlockPos(coords[0], coords[1], coords[2]));
 		} else {
 			return null;
 		}
@@ -398,7 +399,7 @@ public enum Direction {
 				break;
 		}
 		
-		return coordonate.world().getTileEntity(x, y, z);
+		return coordonate.world().getTileEntity(new BlockPos(x, y, z));
 	}
 
 	public void writeToNBT(NBTTagCompound nbt, String name) {
@@ -473,32 +474,25 @@ public enum Direction {
 		}		
 	}
 
-	public void rotateFromXN(Vec3 p) {
+	public void rotateFromXN(Vec3d p) {
 		double x = p.xCoord, y = p.yCoord, z = p.zCoord;
 		switch(this) {
 			case XN:
 				break;
 			case XP:
-				p.xCoord = -x;
-				p.zCoord = -z;
+				p = new Vec3d(-x, y, -z);
 				break;
 			case YN:
-				p.xCoord = y;
-				p.yCoord = x;
-				p.zCoord = -z;
+				p = new Vec3d(y, x, -z);
 				break;
 			case YP:
-				p.xCoord = y;
-				p.yCoord = -x;
-				p.zCoord = z;
+				p = new Vec3d(y, -x, z);
 				break;
 			case ZN:
-				p.xCoord = -z;
-				p.zCoord = x;
+				p = new Vec3d(-z, y, x);
 				break;
 			case ZP:
-				p.xCoord = z;
-				p.zCoord = -x;
+				p = new Vec3d(z, y, -x);
 				break;
 			default:
 				break;
@@ -556,7 +550,7 @@ public enum Direction {
 		}
 	}
 
-	public static Direction from(ForgeDirection direction) {
+	public static Direction from(EnumFacing direction) {
 		switch(direction) {
 		case DOWN: return YN;
 		case EAST: return XP;
@@ -568,15 +562,15 @@ public enum Direction {
 		}
 	}
 
-	public ForgeDirection toForge() {
+	public EnumFacing toEnumFacing() {
 		switch(this) {
-		case YN: return ForgeDirection.DOWN;
-		case XP: return ForgeDirection.EAST;
-		case ZN: return ForgeDirection.NORTH;
-		case ZP: return ForgeDirection.SOUTH;
-		case YP: return ForgeDirection.UP;
-		case XN: return ForgeDirection.WEST;
-		default: return ForgeDirection.UNKNOWN;
+		case YN: return EnumFacing.DOWN;
+		case XP: return EnumFacing.EAST;
+		case ZN: return EnumFacing.NORTH;
+		case ZP: return EnumFacing.SOUTH;
+		case YP: return EnumFacing.UP;
+		case XN: return EnumFacing.WEST;
+		default: return EnumFacing.DOWN;
 		}
 	}
 }

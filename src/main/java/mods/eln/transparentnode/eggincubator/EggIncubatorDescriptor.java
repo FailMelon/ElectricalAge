@@ -16,7 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -122,7 +123,7 @@ public class EggIncubatorDescriptor extends TransparentNodeDescriptor {
 
 	@Override
 	public void addCollisionBoxesToList(AxisAlignedBB par5AxisAlignedBB, List list, TransparentNodeEntity entity) {
-		AxisAlignedBB bb = Blocks.stone.getCollisionBoundingBoxFromPool(entity.getWorldObj(), entity.xCoord, entity.yCoord, entity.zCoord);
+		AxisAlignedBB bb = Blocks.stone.getCollisionBoundingBoxFromPool(entity.getWorld(), entity.getPos(), entity.getWorld().getBlockState(entity.getPos()));
 		bb.maxY -= 0.5;
 		if (par5AxisAlignedBB.intersectsWith(bb)) list.add(bb);
 	}

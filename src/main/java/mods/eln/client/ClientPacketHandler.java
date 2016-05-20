@@ -1,13 +1,13 @@
 package mods.eln.client;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import io.netty.channel.ChannelHandler.Sharable;
 import mods.eln.Eln;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientCustomPacketEvent;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -23,9 +23,9 @@ public class ClientPacketHandler {
 	@SubscribeEvent
 	public void onClientPacket(ClientCustomPacketEvent event) {
 		//Utils.println("onClientPacket");
-		FMLProxyPacket packet = event.packet;
+		FMLProxyPacket packet = event.getPacket();
 		DataInputStream stream = new DataInputStream(new ByteArrayInputStream(packet.payload().array()));
-		NetworkManager manager = event.manager;
+		NetworkManager manager = event.getManager();
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer; // EntityClientPlayerMP
 
 		Eln.packetHandler.packetRx(stream, manager, player);

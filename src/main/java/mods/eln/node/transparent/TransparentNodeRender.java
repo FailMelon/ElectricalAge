@@ -9,7 +9,6 @@ import mods.eln.Eln;
 import mods.eln.misc.Direction;
 import mods.eln.misc.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderBlocks;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -21,8 +20,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 
 import com.jcraft.jorbis.Block;
-
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TransparentNodeRender extends TileEntitySpecialRenderer
 {

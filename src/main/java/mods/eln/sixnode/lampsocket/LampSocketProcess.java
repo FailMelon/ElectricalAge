@@ -17,8 +17,8 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -134,13 +134,13 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 				double randTarget = 1.0 / lampDescriptor.vegetableGrowRate * time * (1.0 * light / lampDescriptor.nominalLight / 15.0);
 				if (randTarget > Math.random()) {
 					boolean exit = false;
-					Vec3 vv = Vec3.createVectorHelper(1, 0, 0);
-					Vec3 vp = Vec3.createVectorHelper(myCoord().x + 0.5, myCoord().y + 0.5, myCoord().z + 0.5);
+					Vec3d vv = new Vec3d(1, 0, 0);
+					Vec3d vp = new Vec3d(myCoord().x + 0.5, myCoord().y + 0.5, myCoord().z + 0.5);
 
-					vv.rotateAroundZ((float) (alphaZ * Math.PI / 180.0));
+					vv.rotatePitch((float) (alphaZ * Math.PI / 180.0));
 
-					vv.rotateAroundY((float) ((Math.random() - 0.5) * 2 * Math.PI / 4));
-					vv.rotateAroundZ((float) ((Math.random() - 0.5) * 2 * Math.PI / 4));
+					vv.rotateYaw((float) ((Math.random() - 0.5) * 2 * Math.PI / 4));
+					vv.rotatePitch((float) ((Math.random() - 0.5) * 2 * Math.PI / 4));
 
 					lamp.front.rotateOnXnLeft(vv);
 					lamp.side.rotateFromXN(vv);
@@ -148,10 +148,8 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 					Coordonate c = new Coordonate(myCoord());
 
 					for (int idx = 0; idx < lamp.socketDescriptor.range + light; idx++) {
-						// newCoord.move(lamp.side.getInverse());
-						vp.xCoord += vv.xCoord;
-						vp.yCoord += vv.yCoord;
-						vp.zCoord += vv.zCoord;
+						// newCoord.move(lamp.side.getInverse());					
+						vp.add(vv);
 
 						c.setPosition(vp);
 						Block b = c.getBlock();
@@ -160,9 +158,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 							break;
 						}
 						if (isOpaque(c)) {
-							vp.xCoord -= vv.xCoord;
-							vp.yCoord -= vv.yCoord;
-							vp.zCoord -= vv.zCoord;
+							vp.subtract(vv);
 
 							c.setPosition(vp);
 							b = c.getBlock();
@@ -174,7 +170,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 						Block b = c.getBlock();
 
 						if (b != Blocks.air) {
-							b.updateTick(c.world(), c.x, c.y, c.z, c.world().rand);
+							b.updateTick(c.world(), c.getBlockPos(), c.world().getBlockState(c.getBlockPos()), c.world().rand);
 						}
 					}
 				}
@@ -304,23 +300,21 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 
 	// ElectricalConnectionOneWay connection = null;
 
-	public void rotateAroundZ(Vec3 v, float par1) {
+	public void rotateAroundZ(Vec3d v, float par1) {
 		float f1 = MathHelper.cos(par1);
 		float f2 = MathHelper.sin(par1);
 		double d0 = v.xCoord * (double) f1 + v.yCoord * (double) f2;
 		double d1 = v.yCoord * (double) f1 - v.xCoord * (double) f2;
 		double d2 = v.zCoord;
-		v.xCoord = d0;
-		v.yCoord = d1;
-		v.zCoord = d2;
+		v = new Vec3d(d0, d1, d2);
 	}
 
 	void placeSpot(int newLight) {
 		boolean exit = false;
 		if (!lbCoord.getBlockExist())
 			return;
-		Vec3 vv = Vec3.createVectorHelper(1, 0, 0);
-		Vec3 vp = Utils.getVec05(myCoord());
+		Vec3d vv = new Vec3d(1, 0, 0);
+		Vec3d vp = Utils.getVec05(myCoord());
 
 		rotateAroundZ(vv, (float) (alphaZ * Math.PI / 180.0));
 
@@ -330,9 +324,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 		Coordonate newCoord = new Coordonate(myCoord());
 		for (int idx = 0; idx < lamp.socketDescriptor.range; idx++) {
 			// newCoord.move(lamp.side.getInverse());
-			vp.xCoord += vv.xCoord;
-			vp.yCoord += vv.yCoord;
-			vp.zCoord += vv.zCoord;
+			vp.add(vv);
 
 			newCoord.setPosition(vp);
 			if (!newCoord.getBlockExist()) {
@@ -340,9 +332,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 				break;
 			}
 			if (isOpaque(newCoord)) {
-				vp.xCoord -= vv.xCoord;
-				vp.yCoord -= vv.yCoord;
-				vp.zCoord -= vv.zCoord;
+				vp.subtract(vv);
 
 				newCoord.setPosition(vp);
 				break;
@@ -358,9 +348,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 						break;
 				}
 
-				vp.xCoord -= vv.xCoord;
-				vp.yCoord -= vv.yCoord;
-				vp.zCoord -= vv.zCoord;
+				vp.subtract(vv);
 				newCoord.setPosition(vp);
 			}
 		}
@@ -370,7 +358,7 @@ public class LampSocketProcess implements IProcess, INBTTReady /*,LightBlockObse
 
 	public boolean isOpaque(Coordonate coord) {
 		Block block = coord.getBlock();
-		boolean isNotOpaque = block == Blocks.air || !block.isOpaqueCube();
+		boolean isNotOpaque = block == Blocks.air || !block.isOpaqueCube(block.getDefaultState());
 		if (block == Blocks.farmland)
 			isNotOpaque = false;
 		return !isNotOpaque;

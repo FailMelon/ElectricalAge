@@ -19,6 +19,7 @@ import mods.eln.sim.IProcess;
 import mods.eln.sim.ThermalLoad;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class TreeResinCollectorElement extends SixNodeElement {
@@ -81,15 +82,15 @@ public class TreeResinCollectorElement extends SixNodeElement {
 		int leafCount = 0;
 		int yStart, yEnd;
 
-		while (TreeResinCollectorDescriptor.isWood(worldObj.getBlock(posWood[0], posWood[1] - 1, posWood[2]))) {
+		while (TreeResinCollectorDescriptor.isWood(worldObj.getBlockState(new BlockPos(posWood[0], posWood[1] - 1, posWood[2])).getBlock())) {
 			posWood[1]--;
 		}
 		yStart = posWood[1];
 
 		posWood[1] = coord.y;
 		// timeCounter-= timeTarget;
-		while (TreeResinCollectorDescriptor.isWood(worldObj.getBlock(posWood[0], posWood[1] + 1, posWood[2]))) {
-			if (TreeResinCollectorDescriptor.isLeaf(worldObj.getBlock(posCollector[0], posWood[1] + 1, posCollector[2]))) leafCount++;
+		while (TreeResinCollectorDescriptor.isWood(worldObj.getBlockState(new BlockPos(posWood[0], posWood[1] + 1, posWood[2])).getBlock())) {
+			if (TreeResinCollectorDescriptor.isLeaf(worldObj.getBlockState(new BlockPos(posCollector[0], posWood[1] + 1, posCollector[2])).getBlock())) leafCount++;
 			posWood[1]++;
 		}
 		yEnd = posWood[1];

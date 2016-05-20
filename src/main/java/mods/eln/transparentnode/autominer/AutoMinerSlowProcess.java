@@ -117,12 +117,12 @@ public class AutoMinerSlowProcess implements IProcess, INBTTReady {
                         // else
                         // miner.pushLog("Mud " + "extracted");
                         //
-                        Block block = jobCoord.world().getBlock(jobCoord.x, jobCoord.y, jobCoord.z);
-                        int meta = jobCoord.world().getBlockMetadata(jobCoord.x, jobCoord.y, jobCoord.z);
+                        Block block = jobCoord.getBlock();
+                        int meta = jobCoord.getMeta();
 						if (silkTouch) {
 							drop(new ItemStack(block, 1, meta));
 						} else {
-							List<ItemStack> drop = block.getDrops(jobCoord.world(), jobCoord.x, jobCoord.y, jobCoord.z, meta, 0);
+							List<ItemStack> drop = block.getDrops(jobCoord.world(), jobCoord.getBlockPos(), jobCoord.getBlockState(), meta);
 
 							for (ItemStack stack : drop) {
 								drop(stack);
@@ -133,9 +133,9 @@ public class AutoMinerSlowProcess implements IProcess, INBTTReady {
 						// This is so mobs won't spawn excessively.
 						int xDist = jobCoord.x - miner.node.coordonate.x, zDist = jobCoord.z - miner.node.coordonate.z;
 						if (xDist * xDist + zDist * zDist > 25) {
-							jobCoord.world().setBlock(jobCoord.x, jobCoord.y, jobCoord.z, Blocks.cobblestone);
+							jobCoord.setBlock(Blocks.cobblestone);
 						} else {
-							jobCoord.world().setBlockToAir(jobCoord.x, jobCoord.y, jobCoord.z);
+							jobCoord.setBlock(Blocks.air);
 						}
 
                         energyCounter -= energyTarget;
@@ -327,7 +327,7 @@ public class AutoMinerSlowProcess implements IProcess, INBTTReady {
 						double dy = 0;
 						double dz = jobCoord.z - miner.node.coordonate.z;
 						double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-						Block block = jobCoord.world().getBlock(jobCoord.x, jobCoord.y, jobCoord.z);
+						Block block = jobCoord.getBlock();
 						if (checkIsOre(jobCoord) || (distance > 0.1 && distance < miningRay && isMinable(block))) {
 							jobFind = true;
 							setJob(jobType.ore);
@@ -347,7 +347,7 @@ public class AutoMinerSlowProcess implements IProcess, INBTTReady {
 					jobCoord.y--;
 					jobCoord.z = miner.node.coordonate.z;
 
-					Block block = jobCoord.world().getBlock(jobCoord.x, jobCoord.y, jobCoord.z);
+					Block block = jobCoord.getBlock();
 					if (block != Blocks.air
 							&& block != Blocks.flowing_water && block != Blocks.water
 							&& block != Blocks.flowing_lava && block != Blocks.lava) {
@@ -394,11 +394,11 @@ public class AutoMinerSlowProcess implements IProcess, INBTTReady {
 	}
 
 	boolean checkIsOre(Coordonate coordonate) {
-		Block block = coordonate.world().getBlock(coordonate.x, coordonate.y, coordonate.z);
+		Block block = coordonate.getBlock();
 		if (block instanceof BlockOre) return true;
 		if (block instanceof OreBlock) return true;
 		if (block instanceof BlockRedstoneOre) return true;
-		if (PortableOreScannerItem.RenderStorage.getBlockKeyFactor()[Block.getIdFromBlock(block) + (coordonate.world().getBlockMetadata(coordonate.x, coordonate.y, coordonate.z) << 12)] != 0)
+		if (PortableOreScannerItem.RenderStorage.getBlockKeyFactor()[Block.getIdFromBlock(block) + (coordonate.getMeta() << 12)] != 0)
 			return true;
 		return false;
 	}

@@ -3,7 +3,6 @@ package mods.eln.misc;
 import mods.eln.Eln;
 import mods.eln.sixnode.electricalcable.ElectricalCableDescriptor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.IItemRenderer;
 
 public enum VoltageLevelColor {
     None(null),

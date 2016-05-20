@@ -1,15 +1,17 @@
 package mods.eln.misc;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import mods.eln.node.NodeBlockEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Coordonate implements INBTTReady {
 
@@ -66,35 +68,51 @@ public class Coordonate implements INBTTReady {
 	}
 	
 	public Coordonate(NodeBlockEntity entity) {
-		x = entity.xCoord;
-		y = entity.yCoord;
-		z = entity.zCoord;
-		dimention = entity.getWorldObj().provider.dimensionId;
+		x = entity.getPos().getX();
+		y = entity.getPos().getY();
+		z = entity.getPos().getZ();
+		dimention = entity.getWorld().provider.getDimension();
 	}
 
-	public Coordonate(int x, int y, int z, int dimention) {
+	public Coordonate(int x, int y, int z, int dimension) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.dimention = dimention;
+		this.dimention = dimension;
+	}
+	
+	public Coordonate(BlockPos pos, int dimension) {
+		this.x = pos.getX();
+		this.y = pos.getY();
+		this.z = pos.getZ();
+		this.dimention = dimension;
 	}
 
 	public Coordonate(int x, int y, int z, World world) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.dimention = world.provider.dimensionId;
+		this.dimention = world.provider.getDimension();
+		if(world.isRemote)
+			this.w = world;
+	}
+	
+	public Coordonate(BlockPos pos, World world) {
+		this.x = pos.getX();
+		this.y = pos.getY();
+		this.z = pos.getZ();
+		this.dimention = world.provider.getDimension();
 		if(world.isRemote)
 			this.w = world;
 	}
 
 	public Coordonate(TileEntity entity) {
-		this.x = entity.xCoord;
-		this.y = entity.yCoord;
-		this.z = entity.zCoord;
-		this.dimention = entity.getWorldObj().provider.dimensionId;
-		if(entity.getWorldObj().isRemote)
-			this.w = entity.getWorldObj();
+		this.x = entity.getPos().getX();
+		this.y = entity.getPos().getY();
+		this.z = entity.getPos().getZ();
+		this.dimention = entity.getWorld().provider.getDimension();
+		if(entity.getWorld().isRemote)
+			this.w = entity.getWorld();
 	}
 	
 	public Coordonate newWithOffset(int x, int y, int z) {
@@ -155,21 +173,29 @@ public class Coordonate implements INBTTReady {
 	}
 	
 	public Block getBlock() {
-		return world().getBlock(x, y, z);
+		return world().getBlockState(getBlockPos()).getBlock();
 	}
 
-	public static AxisAlignedBB getAxisAlignedBB(Coordonate a, Coordonate b) {
-		AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(
-				Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z),
-				Math.max(a.x, b.x) + 1.0, Math.max(a.y, b.y) + 1.0, Math.max(a.z, b.z) + 1.0);
-		return bb;
+	public BlockPos getBlockPos() {
+		return new BlockPos(x, y, z);
+	}
+	
+	public IBlockState getBlockState() {
+		return world().getBlockState(getBlockPos());
+	}
+	
+	public static AxisAlignedBB getAxisAlignedBB(Coordonate a, Coordonate b) 
+	{
+		BlockPos start = new BlockPos(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+		BlockPos end = new BlockPos(Math.max(a.x, b.x) + 1.0,  Math.max(a.y, b.y) + 1.0, Math.max(a.z, b.z) + 1.0);
+		return new AxisAlignedBB(start, end);
 	}
 
-	public  AxisAlignedBB getAxisAlignedBB(int ray) {
-		AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(
-				x - ray, y - ray, z - ray,
-				x + ray + 1, y + ray + 1, z + ray + 1);
-		return bb;
+	public  AxisAlignedBB getAxisAlignedBB(int ray) 
+	{
+		BlockPos start = new BlockPos(x - ray, y - ray, z - ray);
+		BlockPos end = new BlockPos(x + ray + 1, y + ray + 1, z + ray + 1);
+		return new AxisAlignedBB(start, end);
 	}
 
 	public double distanceTo(Entity e) {
@@ -180,14 +206,16 @@ public class Coordonate implements INBTTReady {
 		world().setBlock(x, y, z, id, meta, 2);
 	}*/
 
-	public int getMeta() {
-		return world().getBlockMetadata(x, y, z);
+	public int getMeta() 
+	{
+
+		return world().getBlockState(getBlockPos()).getBlock().getMetaFromState(world().getBlockState(getBlockPos()));
 	}
 
 	public boolean getBlockExist() {
 		World w = DimensionManager.getWorld(dimention);
 		if(w == null) return false;
-		return w.blockExists(x, y, z);
+		return w.isBlockLoaded(new BlockPos(x, y, z));
 	}
 	
 	public boolean getWorldExist() {
@@ -207,14 +235,14 @@ public class Coordonate implements INBTTReady {
 		this.z = (int) vp[2];
 	}
 	
-	public void setPosition(Vec3 vp) {
+	public void setPosition(Vec3d vp) {
 		this.x = (int) vp.xCoord;
 		this.y = (int) vp.yCoord;
 		this.z = (int) vp.zCoord;
 	}
 
 	public TileEntity getTileEntity() {
-		return world().getTileEntity(x, y, z);
+		return world().getTileEntity(new BlockPos(x, y, z));
 	}
 
 	public void invalidate() {
@@ -257,14 +285,16 @@ public class Coordonate implements INBTTReady {
 	public void setWorld(World worldObj) {
 		if(worldObj.isRemote)
 			w = worldObj;
-		dimention = worldObj.provider.dimensionId;
+		dimention = worldObj.provider.getDimension();
 	}
 
-	public void setMetadata(int meta) {
-		world().setBlockMetadataWithNotify(x, y, z, meta, 0);
+	public void setMetadata(int meta) 
+	{	
+		world().setBlockState(getBlockPos(), world().getBlockState(getBlockPos()), meta);
 	}
 
-	public void setBlock(Block b) {
-		world().setBlock(x, y, z, b);
+	public void setBlock(Block b) 
+	{
+		world().setBlockState(getBlockPos(), b.getDefaultState());
 	}
 }

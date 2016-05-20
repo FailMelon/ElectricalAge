@@ -2,6 +2,7 @@ package mods.eln.entity;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
@@ -9,8 +10,8 @@ public class ReplicatorRender extends RenderLiving {
 
     private static final ResourceLocation res = new ResourceLocation("eln:textures/entity/replicator.png");
 
-    public ReplicatorRender(ModelBase par1ModelBase, float par2) {
-        super(par1ModelBase, par2);
+    public ReplicatorRender(RenderManager rendermanagerIn, ModelBase par1ModelBase, float par2) {
+        super(rendermanagerIn, par1ModelBase, par2);
     }
 
     @Override

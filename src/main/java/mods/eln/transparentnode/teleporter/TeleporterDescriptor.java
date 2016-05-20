@@ -8,7 +8,7 @@ import mods.eln.sixnode.electricalcable.ElectricalCableDescriptor;
 import mods.eln.wiki.Data;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TeleporterDescriptor extends TransparentNodeDescriptor{
@@ -79,7 +79,7 @@ public class TeleporterDescriptor extends TransparentNodeDescriptor{
 		temp.setDimention(c.dimention);
 		temp.applyTransformation(front, c);
 		
-		AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(temp.x,temp.y,temp.z,temp.x+1,temp.y + areaH,temp.z +1);
+		AxisAlignedBB bb = new AxisAlignedBB(temp.x,temp.y,temp.z,temp.x+1,temp.y + areaH,temp.z +1);
 		return bb;
 	}
 	
@@ -114,7 +114,7 @@ public class TeleporterDescriptor extends TransparentNodeDescriptor{
 		Coordonate[] temp = new Coordonate[powerCoordonate.length];
 		for(int idx = 0;idx < temp.length;idx++){
 			temp[idx] = new Coordonate(powerCoordonate[idx]);
-			temp[idx].setDimention(w.provider.dimensionId);
+			temp[idx].setDimention(w.provider.getDimension());
 		}
 		return temp;
 	}

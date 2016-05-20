@@ -1,9 +1,5 @@
 package mods.eln.server;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import mods.eln.Eln;
 import mods.eln.misc.Utils;
 import mods.eln.ore.OreDescriptor;
@@ -11,6 +7,10 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,7 +22,6 @@ public class OreRegenerate {
 
 	public OreRegenerate() {
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLCommonHandler.instance().bus().register(this);
 	}
 
 	static class ChunkRef {
@@ -87,9 +86,9 @@ public class OreRegenerate {
 	@SubscribeEvent
 	public void chunkLoad(ChunkEvent.Load e) {
 	//	if (e.world.isRemote == false) Utils.println("Chunk loaded!");
-		if (e.world.isRemote || (Eln.instance.saveConfig != null && !Eln.instance.saveConfig.reGenOre)) return;
+		if (e.getWorld().isRemote || (Eln.instance.saveConfig != null && !Eln.instance.saveConfig.reGenOre)) return;
 		Chunk c = e.getChunk();
-		ChunkRef ref = new ChunkRef(c.xPosition, c.zPosition, c.worldObj.provider.dimensionId);
+		ChunkRef ref = new ChunkRef(c.xPosition, c.zPosition, c.getWorld().provider.getDimension());
 		if (alreadyLoadedChunks.contains(ref)) {
 			Utils.println("Already regenerated!");
 			return;

@@ -1,7 +1,6 @@
 package mods.eln.misc;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 
 import java.io.*;

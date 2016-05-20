@@ -1,31 +1,26 @@
 package mods.eln.misc;
 
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import mods.eln.Eln;
 import mods.eln.GuiHandler;
 import mods.eln.misc.Obj3D.Obj3DPart;
 import mods.eln.node.six.SixNodeEntity;
 import mods.eln.node.transparent.TransparentNodeEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C17PacketCustomPayload;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
-import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -60,7 +55,7 @@ public class UtilsClient {
     }
 
     public static float distanceFromClientPlayer(SixNodeEntity tileEntity) {
-        return distanceFromClientPlayer(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+        return distanceFromClientPlayer(tileEntity.getWorld(), tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
     }
 
     public static EntityClientPlayerMP getClientPlayer() {
@@ -99,11 +94,11 @@ public class UtilsClient {
     }
 
     public static void drawHaloNoLightSetup(Obj3DPart halo, float r, float g, float b, TileEntity e, boolean bilinear) {
-        drawHaloNoLightSetup(halo, r, g, b, e.getWorldObj(), e.xCoord, e.yCoord, e.zCoord, bilinear);
+        drawHaloNoLightSetup(halo, r, g, b, e.getWorld(), e.xCoord, e.yCoord, e.zCoord, bilinear);
     }
 
     public static void drawHalo(Obj3DPart halo, float r, float g, float b, TileEntity e, boolean bilinear) {
-        drawHalo(halo, r, g, b, e.getWorldObj(), e.xCoord, e.yCoord, e.zCoord, bilinear);
+        drawHalo(halo, r, g, b, e.getWorld(), e.xCoord, e.yCoord, e.zCoord, bilinear);
     }
 
     public static void drawHaloNoLightSetup(Obj3DPart halo, float distance) {
@@ -491,7 +486,7 @@ public class UtilsClient {
             font = i.getFontRenderer(par1ItemStack);
         }
         if (font == null)
-            font = mc().fontRenderer;
+            font = mc().fontRendererObj;
         itemRenderer.renderItemAndEffectIntoGUI(font, mc().getTextureManager(), par1ItemStack, x, y);
         // itemRenderer.renderItemOverlayIntoGUI(font, mc().getTextureManager(), par1ItemStack, x, y, par4Str);
 

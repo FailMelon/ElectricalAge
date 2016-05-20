@@ -1,7 +1,5 @@
 package mods.eln.misc;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 import mods.eln.Eln;
 import mods.eln.generic.GenericItemBlockUsingDamage;
 import mods.eln.generic.GenericItemUsingDamage;
@@ -27,19 +25,21 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.play.server.S3FPacketCustomPayload;
+import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -375,7 +375,7 @@ public class Utils {
 		// p.stop();
 		// Utils.println(p);
 
-		S3FPacketCustomPayload packet = new S3FPacketCustomPayload(Eln.channelName, bos.toByteArray());
+		SPacketCustomPayload packet = new SPacketCustomPayload(Eln.channelName, bos.toByteArray());
 		player.playerNetServerHandler.sendPacket(packet);
 
 		// FMLCommonHandler.instance().getMinecraftServerInstance().getEln.eventChannel.sendTo(new FMLProxyPacket(packet),player);
@@ -539,8 +539,8 @@ public class Utils {
 			return Math.max(0.0, Eln.instance.wind.getWind(y));
 		} else {
 			World world = getWorld(worldId);
-			float factor = 1f + world.getRainStrength(0) * 0.2f + world.getWeightedThunderStrength(0) * 0.2f;
-			return Math.max(0.0, Eln.instance.wind.getWind(y) * factor + world.getRainStrength(0) * 1f + world.getWeightedThunderStrength(0) * 2f);
+			float factor = 1f + world.getRainStrength(0) * 0.2f + world.getThunderStrength(0) * 0.2f;
+			return Math.max(0.0, Eln.instance.wind.getWind(y) * factor + world.getRainStrength(0) * 1f + world.getThunderStrength(0) * 2f);
 		}
 	}
 
@@ -550,16 +550,16 @@ public class Utils {
 	// return Math.max(0.0, Eln.instance.wind.getWind(y) * factor + world.getRainStrength(0) * 1f + world.getWeightedThunderStrength(0) * 2f);
 	// }
 
-	public static void dropItem(ItemStack itemStack, int x, int y, int z, World world) {
+	public static void dropItem(ItemStack itemStack, BlockPos pos, World world) {
 		if (itemStack == null)
 			return;
-		if (world.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+		if (world.getGameRules().getBoolean("doTileDrops")) {
 			float var6 = 0.7F;
 			double var7 = (double) (world.rand.nextFloat() * var6) + (double) (1.0F - var6) * 0.5D;
 			double var9 = (double) (world.rand.nextFloat() * var6) + (double) (1.0F - var6) * 0.5D;
 			double var11 = (double) (world.rand.nextFloat() * var6) + (double) (1.0F - var6) * 0.5D;
-			EntityItem var13 = new EntityItem(world, (double) x + var7, (double) y + var9, (double) z + var11, itemStack);
-			var13.delayBeforeCanPickup = 10;
+			EntityItem var13 = new EntityItem(world, (double) pos.getX() + var7, (double) pos.getY() + var9, (double) pos.getZ() + var11, itemStack);
+			var13.setPickupDelay(10);
 			world.spawnEntityInWorld(var13);
 		}
 	}
@@ -716,7 +716,7 @@ public class Utils {
 		} else {
 			ItemDamage = stream.readShort();
 			if (old == null || Item.getIdFromItem(old.getEntityItem().getItem()) != itemId || old.getEntityItem().getItemDamage() != ItemDamage)
-				return new EntityItem(tileEntity.getWorldObj(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5, tileEntity.zCoord + 1.2, Utils.newItemStack(itemId, 1, ItemDamage));
+				return new EntityItem(tileEntity.getWorld(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5, tileEntity.zCoord + 1.2, Utils.newItemStack(itemId, 1, ItemDamage));
 			else
 				return old;
 		}
@@ -747,39 +747,39 @@ public class Utils {
 	 */
 
 	public static void notifyNeighbor(TileEntity t) {
-		int x = t.xCoord;
-		int y = t.yCoord;
-		int z = t.zCoord;
-		World w = t.getWorldObj();
+		int x = t.getPos().getX();
+		int y = t.getPos().getY();
+		int z = t.getPos().getZ();
+		World w = t.getWorld();
 		TileEntity o;
-		o = w.getTileEntity(x + 1, y, z);
+		o = w.getTileEntity(new BlockPos(x + 1, y, z));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
-		o = w.getTileEntity(x - 1, y, z);
+		o = w.getTileEntity(new BlockPos(x - 1, y, z));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
-		o = w.getTileEntity(x, y + 1, z);
+		o = w.getTileEntity(new BlockPos(x, y + 1, z));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
-		o = w.getTileEntity(x, y - 1, z);
+		o = w.getTileEntity(new BlockPos(x, y - 1, z));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
-		o = w.getTileEntity(x, y, z + 1);
+		o = w.getTileEntity(new BlockPos(x, y, z + 1));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
-		o = w.getTileEntity(x, y, z - 1);
+		o = w.getTileEntity(new BlockPos(x, y, z - 1));
 		if (o != null && o instanceof ITileEntitySpawnClient)
 			((ITileEntitySpawnClient) o).tileEntityNeighborSpawn();
 	}
 
 	public static boolean playerHasMeter(EntityPlayer entityPlayer) {
-		if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return true;
 		}
-		if (Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		if (Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return true;
 		}
-		if (Eln.allMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		if (Eln.allMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return true;
 		}
 		return false;
@@ -787,25 +787,25 @@ public class Utils {
 
 	public static int getRedstoneLevelAround(Coordonate coord) {
 		int level = 0;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y, coord.z));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y, coord.z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x + 1, coord.y, coord.z));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x + 1, coord.y, coord.z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y + 1, coord.z));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y + 1, coord.z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y - 1, coord.z));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y - 1, coord.z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y, coord.z + 1));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y, coord.z + 1)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y, coord.z - 1));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y, coord.z - 1)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, coord.world().getStrongestIndirectPower(coord.x, coord.y, coord.z));
+		level = Math.max(level, coord.world().getStrongPower(new BlockPos(coord.x, coord.y, coord.z)));
 		if (level == 15)
 			return 15;
 
@@ -814,25 +814,25 @@ public class Utils {
 
 	public static int getRedstoneLevelAround(World w, int x, int y, int z) {
 		int level = 0;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y, z));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y, z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x + 1, y, z));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x + 1, y, z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y + 1, z));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y + 1, z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y - 1, z));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y - 1, z)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y, z + 1));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y, z + 1)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y, z - 1));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y, z - 1)));
 		if (level == 15)
 			return 15;
-		level = Math.max(level, w.getStrongestIndirectPower(x, y, z));
+		level = Math.max(level, w.getStrongPower(new BlockPos(x, y, z)));
 		if (level == 15)
 			return 15;
 
@@ -926,8 +926,8 @@ public class Utils {
 		return false;
 	}
 
-	public static Vec3 getVec05(Coordonate c) {
-		return Vec3.createVectorHelper(c.x + (c.x < 0 ? -1 : 1) * 0.5, c.y + (c.y < 0 ? -1 : 1) * 0.5, c.z + (c.z < 0 ? -1 : 1) * 0.5);
+	public static Vec3d getVec05(Coordonate c) {
+		return new Vec3d(c.x + (c.x < 0 ? -1 : 1) * 0.5, c.y + (c.y < 0 ? -1 : 1) * 0.5, c.z + (c.z < 0 ? -1 : 1) * 0.5);
 	}
 
 	public static double getHeadPosY(Entity e) {
@@ -943,7 +943,7 @@ public class Utils {
 	 */
 
 	public static boolean isCreative(EntityPlayerMP entityPlayer) {
-		return entityPlayer.theItemInWorldManager.isCreative();
+		return entityPlayer.isCreative();
 		/*
 		 * Minecraft m = Minecraft.getMinecraft(); return m.getIntegratedServer().getGameType().isCreative();
 		 */
@@ -1003,7 +1003,7 @@ public class Utils {
 		public float getWeight(Block block) {
 			if (block == null)
 				return 0;
-			return block.isOpaqueCube() ? 1f : 0f;
+			return block.isOpaqueCube(block.getDefaultState()) ? 1f : 0f;
 		}
 	}
 
@@ -1054,8 +1054,8 @@ public class Utils {
 
 			Block block = Blocks.air;
 
-			if (w.blockExists(xInt + posXint, yInt + posYint, zInt + posZint))
-				block = w.getBlock(xInt + posXint, yInt + posYint, zInt + posZint);
+			if (w.isBlockLoaded(new BlockPos(xInt + posXint, yInt + posYint, zInt + posZint)))
+				block = w.getBlockState(new BlockPos(xInt + posXint, yInt + posYint, zInt + posZint)).getBlock();
 
 			float dToStack;
 
@@ -1078,11 +1078,11 @@ public class Utils {
 	}
 
 	public static boolean isBlockLoaded(World world, double x, double y, double z) {
-		return world.blockExists(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+		return world.isBlockLoaded(new BlockPos(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z)));
 	}
 
 	public static Block getBlock(World world, double x, double y, double z) {
-		Block block = world.getBlock(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
+		Block block = world.getBlockState(new BlockPos(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z))).getBlock();
 		return block;
 	}
 
@@ -1249,7 +1249,7 @@ public class Utils {
 	}
 
 	public static List<NBTTagCompound> getTags(NBTTagCompound nbt) {
-		Object[] set = nbt.func_150296_c().toArray();
+		Object[] set = nbt.getKeySet().toArray();
 
 		ArrayList<NBTTagCompound> tags = new ArrayList<NBTTagCompound>();
 
@@ -1291,10 +1291,10 @@ public class Utils {
 		chunk.func_150804_b(false);
 	}
 
-	public static void updateAllLightTypes(World worldObj, int xCoord, int yCoord, int zCoord) {
+	public static void updateAllLightTypes(World worldObj, BlockPos pos) {
 		worldObj.func_147451_t(xCoord, yCoord, zCoord);
 
-		worldObj.markBlocksDirtyVertical(xCoord, zCoord, 0, 255);
+		worldObj.markBlocksDirtyVertical(pos.getX(), pos.getZ(), 0, 255);
 	}
 
 	public static int getItemId(ItemStack stack) {
@@ -1308,11 +1308,11 @@ public class Utils {
 	// public static RecipesList smeltRecipeList = new RecipesList();
 
 	public static void addSmelting(Item parentItem, int parentItemDamage, ItemStack findItemStack, float f) {
-		FurnaceRecipes.smelting().func_151394_a(newItemStack(parentItem, 1, parentItemDamage), findItemStack, f);
+		FurnaceRecipes.instance().addSmeltingRecipe(newItemStack(parentItem, 1, parentItemDamage), findItemStack, f);
 	}
 
 	public static void addSmelting(Block parentBlock, int parentItemDamage, ItemStack findItemStack, float f) {
-		FurnaceRecipes.smelting().func_151394_a(newItemStack(Item.getItemFromBlock(parentBlock), 1, parentItemDamage), findItemStack, f);
+		FurnaceRecipes.instance().addSmeltingRecipe(newItemStack(Item.getItemFromBlock(parentBlock), 1, parentItemDamage), findItemStack, f);
 	}
 
 	public static void addSmelting(Item parentItem, int parentItemDamage, ItemStack findItemStack) {

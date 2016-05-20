@@ -12,8 +12,8 @@ import mods.eln.sound.SoundCommand;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 import java.util.Random;
@@ -196,7 +196,7 @@ public class TurretSlowProcess extends StateMachine {
 																entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
 					boolean visible = true;
 					for (Block b: blockList)
-						if (b.isOpaqueCube()) {
+						if (b.isOpaqueCube(b.getDefaultState())) {
 							visible = false;
 							break;
 						}
@@ -292,7 +292,7 @@ public class TurretSlowProcess extends StateMachine {
 			List<Block> blockList = Utils.traceRay(coord.world(), coord.x + 0.5, coord.y + 0.5, coord.z + 0.5, 
 					target.posX, target.posY + target.getEyeHeight(), target.posZ);
 			for (Block b: blockList)
-				if (b.isOpaqueCube()) 
+				if (b.isOpaqueCube(b.getDefaultState())) 
 					return new SeekingState();
 			
 			if (element.getGunPosition() == 1 && element.isTargetReached() &&
