@@ -25,6 +25,7 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
@@ -33,6 +34,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -44,6 +46,8 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.lwjgl.opengl.GL11;
+
+import io.netty.buffer.Unpooled;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -375,7 +379,9 @@ public class Utils {
 		// p.stop();
 		// Utils.println(p);
 
-		SPacketCustomPayload packet = new SPacketCustomPayload(Eln.channelName, bos.toByteArray());
+    	PacketBuffer pktbuf = new PacketBuffer(Unpooled.buffer());
+    	pktbuf.writeBytes(bos.toByteArray());
+		SPacketCustomPayload packet = new SPacketCustomPayload(Eln.channelName, pktbuf);
 		player.playerNetServerHandler.sendPacket(packet);
 
 		// FMLCommonHandler.instance().getMinecraftServerInstance().getEln.eventChannel.sendTo(new FMLProxyPacket(packet),player);
@@ -716,7 +722,7 @@ public class Utils {
 		} else {
 			ItemDamage = stream.readShort();
 			if (old == null || Item.getIdFromItem(old.getEntityItem().getItem()) != itemId || old.getEntityItem().getItemDamage() != ItemDamage)
-				return new EntityItem(tileEntity.getWorld(), tileEntity.xCoord + 0.5, tileEntity.yCoord + 0.5, tileEntity.zCoord + 1.2, Utils.newItemStack(itemId, 1, ItemDamage));
+				return new EntityItem(tileEntity.getWorld(), tileEntity.getPos().getX() + 0.5, tileEntity.getPos().getY() + 0.5, tileEntity.getPos().getZ() + 1.2, Utils.newItemStack(itemId, 1, ItemDamage));
 			else
 				return old;
 		}
@@ -1237,7 +1243,7 @@ public class Utils {
 	}
 
 	public static void addChatMessage(EntityPlayer entityPlayer, String string) {
-		entityPlayer.addChatMessage(new ChatComponentText(string));
+		entityPlayer.addChatMessage(new TextComponentString(string));
 	}
 
 	public static ItemStack newItemStack(int i, int size, int damage) {

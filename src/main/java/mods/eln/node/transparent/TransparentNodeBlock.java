@@ -9,12 +9,15 @@ import mods.eln.node.NodeBase;
 import mods.eln.node.NodeBlock;
 import mods.eln.node.NodeBlockEntity;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -109,17 +112,17 @@ public class TransparentNodeBlock extends NodeBlock {
     	return true;
     }
 
-    
-    public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB par5AxisAlignedBB, List list, Entity entity)
+    @Override
+    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB aabb, List<AxisAlignedBB> list, Entity entity)
     {
      //   this.setBlockBoundsBasedOnState(world,x, y, z);
       //  super.addCollisionBoxesToList(world, x, y, z, par5AxisAlignedBB, list, entity);
-    	TileEntity tileEntity = world.getTileEntity(x, y, z);
+    	TileEntity tileEntity = world.getTileEntity(pos);
     	if(tileEntity == null || (tileEntity instanceof TransparentNodeEntity == false)){
-    		super.addCollisionBoxesToList(world, x, y, z, par5AxisAlignedBB, list, entity);
+    		super.addCollisionBoxToList(pos, aabb, list, state.getSelectedBoundingBox(world, pos));
     	}
     	else{
-    		((TransparentNodeEntity)tileEntity).addCollisionBoxesToList(par5AxisAlignedBB, list);
+    		((TransparentNodeEntity)tileEntity).addCollisionBoxesToList(aabb, list);
     	}
         //Utils.println(list);
     }

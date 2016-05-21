@@ -6,6 +6,7 @@ import mods.eln.misc.Obj3D.Obj3DPart;
 import mods.eln.node.six.SixNodeEntity;
 import mods.eln.node.transparent.TransparentNodeEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -17,12 +18,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import io.netty.buffer.Unpooled;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -47,7 +55,7 @@ public class UtilsClient {
     }
 
     public static float distanceFromClientPlayer(World world, int xCoord, int yCoord, int zCoord) {
-        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 
         return (float) Math.sqrt((xCoord - player.posX) * (xCoord - player.posX)
                 + (yCoord - player.posY) * (yCoord - player.posY)
@@ -55,10 +63,10 @@ public class UtilsClient {
     }
 
     public static float distanceFromClientPlayer(SixNodeEntity tileEntity) {
-        return distanceFromClientPlayer(tileEntity.getWorld(), tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+        return distanceFromClientPlayer(tileEntity.getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
     }
 
-    public static EntityClientPlayerMP getClientPlayer() {
+    public static EntityPlayerSP getClientPlayer() {
         return Minecraft.getMinecraft().thePlayer;
     }
 
@@ -80,7 +88,7 @@ public class UtilsClient {
 
     public static void clientOpenGui(GuiScreen gui) {
         guiLastOpen = gui;
-        EntityClientPlayerMP clientPlayer = getClientPlayer();
+        EntityPlayerSP clientPlayer = getClientPlayer();
         clientPlayer.openGui(Eln.instance, GuiHandler.genericOpen, clientPlayer.worldObj, 0, 0, 0);
     }
 
@@ -94,11 +102,11 @@ public class UtilsClient {
     }
 
     public static void drawHaloNoLightSetup(Obj3DPart halo, float r, float g, float b, TileEntity e, boolean bilinear) {
-        drawHaloNoLightSetup(halo, r, g, b, e.getWorld(), e.xCoord, e.yCoord, e.zCoord, bilinear);
+        drawHaloNoLightSetup(halo, r, g, b, e.getWorld(), e.getPos().getX(), e.getPos().getY(), e.getPos().getZ(), bilinear);
     }
 
     public static void drawHalo(Obj3DPart halo, float r, float g, float b, TileEntity e, boolean bilinear) {
-        drawHalo(halo, r, g, b, e.getWorld(), e.xCoord, e.yCoord, e.zCoord, bilinear);
+        drawHalo(halo, r, g, b, e.getWorld(), e.getPos().getX(), e.getPos().getY(), e.getPos().getZ(), bilinear);
     }
 
     public static void drawHaloNoLightSetup(Obj3DPart halo, float distance) {
@@ -502,7 +510,7 @@ public class UtilsClient {
             // GL11.glPushMatrix();
             // GL
             // GL11.glScalef(0.5f, 0.5f, 0.5f);
-            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("" + par1ItemStack.stackSize, x + 10, y + 9, 0xFFFFFFFF);
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("" + par1ItemStack.stackSize, x + 10, y + 9, 0xFFFFFFFF);
             // GL11.glPopMatrix();
             enableDepthTest();
         }
@@ -520,13 +528,13 @@ public class UtilsClient {
         if (t == null)
             return 100000000.0;
         Entity c = Minecraft.getMinecraft().thePlayer;
-        double x = (c.posX - t.xCoord), y = (c.posY - t.yCoord), z = (c.posZ - t.zCoord);
+        double x = (c.posX - t.getPos().getX()), y = (c.posY - t.getPos().getY()), z = (c.posZ - t.getPos().getZ());
         return Math.sqrt(x * x + y * y + z * z);
     }
 
     public static int getLight(World w, int x, int y, int z) {
-        int b = w.getSkyBlockTypeBrightness(EnumSkyBlock.Block, x, y, z);
-        int s = w.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z) - w.calculateSkylightSubtracted(0f);
+        int b = w.getSkyBlockTypeBrightness(EnumSkyBlock.BLOCK, x, y, z);
+        int s = w.getSkyBlockTypeBrightness(EnumSkyBlock.SKY, x, y, z) - w.calculateSkylightSubtracted(0f);
         return Math.max(b, s);
     }
 
@@ -538,8 +546,11 @@ public class UtilsClient {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
-    public static void sendPacketToServer(ByteArrayOutputStream bos) {
-        C17PacketCustomPayload packet = new C17PacketCustomPayload(Eln.channelName, bos.toByteArray());
+    public static void sendPacketToServer(ByteArrayOutputStream bos)
+    {
+    	PacketBuffer pktbuf = new PacketBuffer(Unpooled.buffer());
+    	pktbuf.writeBytes(bos.toByteArray());
+        CPacketCustomPayload packet = new CPacketCustomPayload(Eln.channelName, pktbuf);
         Eln.eventChannel.sendToServer(new FMLProxyPacket(packet));
         // Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new FMLProxyPacket(packet));
     }

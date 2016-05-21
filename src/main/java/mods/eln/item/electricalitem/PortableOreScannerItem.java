@@ -577,7 +577,7 @@ public class PortableOreScannerItem extends GenericItemUsingDamageDescriptor imp
 						stackGreen += blockKeyFactor[blockKey] * dToStack;
 						Block b = Block.getBlockById(blockKey & 0xFFF);
 						if(b != Blocks.air && b != Eln.lightBlock) {
-							if(b.isOpaqueCube())
+							if(b.isOpaqueCube(b.getDefaultState()))
 								stackRed += 0.2f * dToStack;
 							else 
 								stackRed += 0.1f * dToStack;

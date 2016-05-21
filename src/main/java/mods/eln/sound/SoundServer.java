@@ -36,9 +36,8 @@ public class SoundServer {
 	        
 	        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();       
 
-	        for (Object obj :  server.getConfigurationManager().playerEntityList) {
-		    	EntityPlayerMP player = (EntityPlayerMP) obj;
-		    	if (player.dimension == p.world.provider.getDimension && player.getDistance(p.x, p.y, p.z) < p.rangeMax + 2);
+	        for (EntityPlayerMP player :  server.getPlayerList().getPlayerList()) {
+		    	if (player.dimension == p.world.provider.getDimension() && player.getDistance(p.x, p.y, p.z) < p.rangeMax + 2);
 		    		Utils.sendPacketToClient(bos, player);
 		    }
 		} catch (IOException e) {

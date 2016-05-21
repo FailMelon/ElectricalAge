@@ -24,7 +24,7 @@ public class ItemRender implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack itemStack, Object... data) {
-            FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+            FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
           //  GL11.glTranslatef(-0.5f, -0.5f, -0.5f);
  //           Eln.obj.draw("ElectricFurnace", "furnace");
           //  GL11.glTranslatef(0.5f, 0.5f, 0.5f);

@@ -9,6 +9,7 @@ import mods.eln.misc.Color;
 import mods.eln.misc.Version;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.*;
 
@@ -72,9 +73,9 @@ public class ConsoleListener extends CommandBase {
 			case 1:
 				//Parse for probable commands
 				if(astring[0].isEmpty()){
-					icommandsender.addChatMessage(new ChatComponentText(Color.COLOR_DARK_CYAN + "ELN >"));
-					icommandsender.addChatMessage(new ChatComponentText(Color.COLOR_BRIGHT_GREY   + "   \""+cmdNameStr_listCmd+"\" to print the full command list."));
-					icommandsender.addChatMessage(new ChatComponentText(Color.COLOR_BRIGHT_GREY   + "   \""+ cmdNameStr_man +"\" + <command> for command usage (or command + TAB)."));
+					icommandsender.addChatMessage(new TextComponentString(Color.COLOR_DARK_CYAN + "ELN >"));
+					icommandsender.addChatMessage(new TextComponentString(Color.COLOR_BRIGHT_GREY   + "   \""+cmdNameStr_listCmd+"\" to print the full command list."));
+					icommandsender.addChatMessage(new TextComponentString(Color.COLOR_BRIGHT_GREY   + "   \""+ cmdNameStr_man +"\" + <command> for command usage (or command + TAB)."));
 					List<String> ret = new ArrayList<String>();
 					ret.add(cmdNameStr_listCmd);
 					return ret;
@@ -377,7 +378,7 @@ public class ConsoleListener extends CommandBase {
 	}
 
 	private void cprint(ICommandSender ics, String text){
-		ics.addChatMessage(new ChatComponentText(Color.COLOR_BRIGHT_GREY+text));
+		ics.addChatMessage(new TextComponentString(Color.COLOR_BRIGHT_GREY+text));
 	}
 }
 

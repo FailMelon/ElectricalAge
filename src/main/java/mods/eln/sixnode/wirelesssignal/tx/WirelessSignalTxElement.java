@@ -17,6 +17,7 @@ import mods.eln.sixnode.wirelesssignal.IWirelessSignalTx;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -129,7 +130,7 @@ public class WirelessSignalTxElement extends SixNodeElement implements IWireless
 	}
 
 	@Override
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos) {
 		if (Utils.isPlayerUsingWrench(entityPlayer)) {
 			front = front.getNextClockwise();
 			sixNode.reconnect();

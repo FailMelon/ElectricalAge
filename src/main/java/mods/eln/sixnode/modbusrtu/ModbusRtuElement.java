@@ -19,6 +19,7 @@ import mods.eln.sixnode.wirelesssignal.WirelessUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -169,7 +170,7 @@ public class ModbusRtuElement extends SixNodeElement implements IModbusSlave {
 	}
 
 	@Override
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos) {
 		if (Utils.isPlayerUsingWrench(entityPlayer)) {
 			if (side.isY()) {
 				front = front.getNextClockwise();

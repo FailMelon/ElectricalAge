@@ -20,6 +20,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 import java.io.DataInputStream;
@@ -580,7 +581,7 @@ public class SixNode extends Node {
 					Utils.generateHeightMap(chunk);
 					Utils.updateSkylight(chunk);
 					chunk.generateSkylightMap();
-					Utils.updateAllLightTypes(coordonate.world(), coordonate.x, coordonate.y, coordonate.z);
+					Utils.updateAllLightTypes(coordonate.world(), coordonate.getBlockPos());
 				}
 				return true;
 			}
@@ -591,7 +592,7 @@ public class SixNode extends Node {
 					return false;
 				if (element.onBlockActivated(entityPlayer, side, vx, vy, vz))
 					return true;
-				return super.onBlockActivated(entityPlayer, side, vx, vy, vz);
+				return super.onBlockActivated(entityPlayer, side, new BlockPos(vx, vy, vz));
 			}
 		}
 	}

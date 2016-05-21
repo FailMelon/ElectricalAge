@@ -72,10 +72,8 @@ public class NodeServer {
 				}
 			}
 
-			for (Object obj : server.getConfigurationManager().playerEntityList)
+			for (EntityPlayerMP player : server.getPlayerList().getPlayerList())
 			{
-				EntityPlayerMP player = (EntityPlayerMP) obj;
-
 				NodeBase openContainerNode = null;
 				INodeContainer container = null;
 				if (player.openContainer != null && player.openContainer instanceof INodeContainer)

@@ -50,7 +50,7 @@ public class I18N {
     public static String tr(final String text, Object... objects) {
         // Try to find the translation for the string using forge API.
         String translation = languageRegistry.getStringLocalization(encodeLangKey(text));
-
+        
         // If no translation was found, just use the original text.
         if (translation == null || "".equals(translation)) {
             translation = text;

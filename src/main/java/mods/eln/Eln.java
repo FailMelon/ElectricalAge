@@ -48,12 +48,6 @@ import mods.eln.simplenode.computerprobe.ComputerProbeBlock;
 import mods.eln.simplenode.computerprobe.ComputerProbeEntity;
 import mods.eln.simplenode.computerprobe.ComputerProbeNode;
 import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherBlock;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherDescriptor;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherDescriptor.ElnDescriptor;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherDescriptor.Ic2Descriptor;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherDescriptor.OcDescriptor;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherEntity;
-import mods.eln.simplenode.energyconverter.EnergyConverterElnToOtherNode;
 import mods.eln.simplenode.test.TestBlock;
 import mods.eln.sixnode.TreeResinCollector.TreeResinCollectorDescriptor;
 import mods.eln.sixnode.batterycharger.BatteryChargerDescriptor;
@@ -526,7 +520,6 @@ public class Eln {
 		SixNode.sixNodeCacheList.add(new SixNodeCacheStd());
 
 		registerTestBlock();
-		registerEnergyConverter();
 		registerComputer();
 
 		registerArmor();
@@ -749,54 +742,6 @@ public class Eln {
 
 		Utils.println("Electrical age init done");
 	}
-
-	EnergyConverterElnToOtherBlock elnToOtherBlockLvu;
-	EnergyConverterElnToOtherBlock elnToOtherBlockMvu;
-	EnergyConverterElnToOtherBlock elnToOtherBlockHvu;
-
-	private void registerEnergyConverter() {
-		if (ElnToOtherEnergyConverterEnable) {
-			String entityName = "eln.EnergyConverterElnToOtherEntity";
-
-			TileEntity.addMapping(EnergyConverterElnToOtherEntity.class, entityName);
-			NodeManager.instance.registerUuid(EnergyConverterElnToOtherNode.getNodeUuidStatic(), EnergyConverterElnToOtherNode.class);
-
-			{
-				String blockName = TR_NAME(Type.TILE, "eln.EnergyConverterElnToOtherLVUBlock");
-				ElnDescriptor elnDesc = new ElnDescriptor(LVU, LVP);
-				Ic2Descriptor ic2Desc = new Ic2Descriptor(32, 1);
-				OcDescriptor ocDesc = new OcDescriptor(ic2Desc.outMax*Other.getElnToOcConversionRatio()/Other.getElnToIc2ConversionRatio());
-				EnergyConverterElnToOtherDescriptor desc =
-					new EnergyConverterElnToOtherDescriptor("EnergyConverterElnToOtherLVU", elnDesc,ic2Desc,ocDesc);
-				elnToOtherBlockLvu = new EnergyConverterElnToOtherBlock(desc);
-				elnToOtherBlockLvu.setCreativeTab(creativeTab).setBlockName(blockName);
-				GameRegistry.registerBlock(elnToOtherBlockLvu,SimpleNodeItem.class, blockName);
-			}
-			{
-				String blockName = TR_NAME(Type.TILE, "eln.EnergyConverterElnToOtherMVUBlock");
-				ElnDescriptor elnDesc = new ElnDescriptor(MVU, MVP);
-				Ic2Descriptor ic2Desc = new Ic2Descriptor( 128, 2);
-				OcDescriptor ocDesc = new OcDescriptor(ic2Desc.outMax*Other.getElnToOcConversionRatio()/Other.getElnToIc2ConversionRatio());
-				EnergyConverterElnToOtherDescriptor desc =
-					new EnergyConverterElnToOtherDescriptor("EnergyConverterElnToOtherMVU",elnDesc,ic2Desc,ocDesc);
-				elnToOtherBlockMvu = new EnergyConverterElnToOtherBlock(desc);
-				elnToOtherBlockMvu.setCreativeTab(creativeTab).setBlockName(blockName);
-				GameRegistry.registerBlock(elnToOtherBlockMvu,SimpleNodeItem.class, blockName);
-			}
-			{
-				String blockName = TR_NAME(Type.TILE, "eln.EnergyConverterElnToOtherHVUBlock");
-				ElnDescriptor elnDesc = new ElnDescriptor( HVU, HVP);
-				Ic2Descriptor ic2Desc = new Ic2Descriptor(512, 3);
-				OcDescriptor ocDesc = new OcDescriptor(ic2Desc.outMax*Other.getElnToOcConversionRatio()/Other.getElnToIc2ConversionRatio());
-				EnergyConverterElnToOtherDescriptor desc =
-					new EnergyConverterElnToOtherDescriptor("EnergyConverterElnToOtherHVU", elnDesc,ic2Desc,ocDesc);
-				elnToOtherBlockHvu = new EnergyConverterElnToOtherBlock(desc);
-				elnToOtherBlockHvu.setCreativeTab(creativeTab).setBlockName(blockName);
-				GameRegistry.registerBlock(elnToOtherBlockHvu,SimpleNodeItem.class, blockName);
-			}
-		}
-	}
-
 
 	ComputerProbeBlock computerProbeBlock;
 
@@ -6656,6 +6601,10 @@ public class Eln {
 				Character.valueOf('G'), new ItemStack(Blocks.glass_pane));
 
 	}
+	
+	 EnergyConverterElnToOtherBlock elnToOtherBlockLvu;
+	 EnergyConverterElnToOtherBlock elnToOtherBlockMvu;
+	 EnergyConverterElnToOtherBlock elnToOtherBlockHvu;
 
 	void recipeEnergyConverter() {
 		if (ElnToOtherEnergyConverterEnable) {

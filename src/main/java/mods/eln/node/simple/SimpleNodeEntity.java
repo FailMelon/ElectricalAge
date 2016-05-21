@@ -1,5 +1,7 @@
 package mods.eln.node.simple;
 
+import io.netty.buffer.Unpooled;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 
@@ -21,6 +23,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -88,10 +91,10 @@ public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity
 		super.invalidate();
 	}
 
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz){
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos){
 		if (!worldObj.isRemote){
 			if (getNode() == null) return false;
-			getNode().onBlockActivated(entityPlayer, side, vx, vy, vz);
+			getNode().onBlockActivated(entityPlayer, side, pos);
 			return true;
 		}
 		return true;
@@ -143,7 +146,9 @@ public abstract class SimpleNodeEntity extends TileEntity implements INodeEntity
     		Utils.println("ASSERT NULL NODE public Packet getDescriptionPacket() nodeblock entity");
     		return null;
     	}
-    	return new SPacketCustomPayload(Eln.channelName, new PacketBuffer(node.getPublishPacket().toByteArray()));
+    	PacketBuffer pktbuf = new PacketBuffer(Unpooled.buffer());
+    	pktbuf.writeBytes(node.getPublishPacket().toByteArray());
+    	return new SPacketCustomPayload(Eln.channelName, pktbuf);
     }
 
     

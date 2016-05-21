@@ -93,8 +93,7 @@ public class ItemEnergyInventoryProcess implements IProcess {
 
 		ArrayList<Element> list = new ArrayList<Element>();
 
-		for (Object obj : server.getConfigurationManager().playerEntityList) {
-			EntityPlayerMP player = (EntityPlayerMP) obj;
+		for (EntityPlayerMP player : server.getPlayerList().getPlayerList()) {
 			list.clear();
 
 			for (ItemStack stack : player.inventory.armorInventory) {

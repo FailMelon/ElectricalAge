@@ -10,8 +10,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.client.IItemRenderer;
+import net.minecraft.util.math.AxisAlignedBB;
+
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -114,7 +114,7 @@ public class TransparentNodeDescriptor extends GenericItemBlockUsingDamageDescri
 			Coordonate temp = new Coordonate(coord);
 			temp.move(Direction.YN);
 			block = temp.getBlock();
-			if(block == null || ((! block.isOpaqueCube()) && block instanceof BlockHopper == false))
+			if(block == null || ((! block.isOpaqueCube(block.getDefaultState())) && block instanceof BlockHopper == false))
 				return tr("You can't place this block at this side");
 		}
 		if(mustHaveCeiling())
@@ -122,14 +122,14 @@ public class TransparentNodeDescriptor extends GenericItemBlockUsingDamageDescri
 			Coordonate temp = new Coordonate(coord);
 			temp.move(Direction.YP);
 			block = temp.getBlock();
-			if(block == null || ! block.isOpaqueCube()) return tr("You can't place this block at this side");
+			if(block == null || ! block.isOpaqueCube(block.getDefaultState())) return tr("You can't place this block at this side");
 		}
 		if(mustHaveWallFrontInverse())
 		{
 			Coordonate temp = new Coordonate(coord);
 			temp.move(front.getInverse());
 			block = temp.getBlock();
-			if(block == null || ! block.isOpaqueCube()) return tr("You can't place this block at this side");
+			if(block == null || ! block.isOpaqueCube(block.getDefaultState())) return tr("You can't place this block at this side");
 		}
 		if(mustHaveWall())
 		{
@@ -138,19 +138,19 @@ public class TransparentNodeDescriptor extends GenericItemBlockUsingDamageDescri
 			temp = new Coordonate(coord);
 			temp.move(Direction.XN);
 			block = temp.getBlock();
-			if(block != null && block.isOpaqueCube()) wall = true;
+			if(block != null && block.isOpaqueCube(block.getDefaultState())) wall = true;
 			temp = new Coordonate(coord);
 			temp.move(Direction.XP);
 			block = temp.getBlock();
-			if(block != null && block.isOpaqueCube()) wall = true;
+			if(block != null && block.isOpaqueCube(block.getDefaultState())) wall = true;
 			temp = new Coordonate(coord);
 			temp.move(Direction.ZN);
 			block = temp.getBlock();
-			if(block != null && block.isOpaqueCube()) wall = true;
+			if(block != null && block.isOpaqueCube(block.getDefaultState())) wall = true;
 			temp = new Coordonate(coord);
 			temp.move(Direction.ZP);
 			block = temp.getBlock();
-			if(block != null && block.isOpaqueCube()) wall = true;
+			if(block != null && block.isOpaqueCube(block.getDefaultState())) wall = true;
 			
 			if(! wall) return tr("You can't place this block at this side");
 		}
@@ -207,7 +207,7 @@ public class TransparentNodeDescriptor extends GenericItemBlockUsingDamageDescri
 		return 0;
 	}
 	public void addCollisionBoxesToList(AxisAlignedBB par5AxisAlignedBB,List list, TransparentNodeEntity entity) {
-		AxisAlignedBB bb = Blocks.stone.getCollisionBoundingBoxFromPool(entity.getWorldObj(),entity.xCoord,entity.yCoord,entity.zCoord);
+		AxisAlignedBB bb = Blocks.stone.getCollisionBoundingBox(entity.getWorld().getBlockState(entity.getPos()), entity.getWorld(),entity.getPos());
 		if(par5AxisAlignedBB.intersectsWith(bb)) list.add(bb);
 	}
 	

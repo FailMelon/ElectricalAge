@@ -47,7 +47,7 @@ public abstract class Node extends NodeBase {
 		if(lastLight != light)
 		{
 			lastLight = light;
-			coordonate.world().updateLightByType(EnumSkyBlock.BLOCK,coordonate.x, coordonate.y, coordonate.z);
+			coordonate.world().checkLight(coordonate.getBlockPos());
 			setNeedPublish(true);
 		}
 		

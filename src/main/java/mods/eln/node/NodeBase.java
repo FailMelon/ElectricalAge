@@ -23,6 +23,7 @@ import mods.eln.sim.IProcess;
 import mods.eln.sim.ThermalConnection;
 import mods.eln.sim.ThermalLoad;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -130,7 +131,7 @@ public abstract class NodeBase {
 			if (b.isOpaqueCube(b.getDefaultState()))
 			;
 			neighborOpaque |= 1 << direction.getInt();
-			if (isBlockWrappable(b, world, coordonate.x, coordonate.y, coordonate.z))
+			if (isBlockWrappable(b, world, coordonate.getBlockPos()))
 				neighborWrapable |= 1 << direction.getInt();
 		}
 	}
@@ -157,9 +158,9 @@ public abstract class NodeBase {
 		return ((neighborOpaque >> direction.getInt()) & 1) != 0;
 	}
 
-	public static boolean isBlockWrappable(Block block, World w, int x, int y, int z)
+	public static boolean isBlockWrappable(Block block, World w, BlockPos pos)
 	{
-		if (block.isReplaceable(w, x, y, z)) return true;
+		if (block.isReplaceable(w, pos)) return true;
 		if (block == Blocks.air) return true;
 		if (block == Eln.sixNodeBlock) return true;
 		if (block instanceof GhostBlock) return true;
@@ -229,7 +230,7 @@ public abstract class NodeBase {
 		Utils.println("Node::onBreakBlock()");
 	}
 
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz)
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos)
 	{
 		if (!entityPlayer.worldObj.isRemote && entityPlayer.getHeldItemMainhand() != null)
 		{
@@ -558,13 +559,10 @@ public abstract class NodeBase {
 	{
 		//Profiler p = new Profiler();
 
-		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-
-		for (Object obj : server.getConfigurationManager().playerEntityList)
+		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();	
+		for (EntityPlayerMP player : server.getPlayerList().getPlayerList())
 		{
-
-			EntityPlayerMP player = (EntityPlayerMP) obj;
-			WorldServer worldServer = (WorldServer) MinecraftServer.getServer().worldServerForDimension(player.dimension);
+			WorldServer worldServer = (WorldServer)player.worldObj.getMinecraftServer().worldServerForDimension(player.dimension);
 			PlayerManager playerManager = worldServer.getPlayerChunkManager();
 			if (player.dimension != this.coordonate.dimention) continue;
 			if (!playerManager.isPlayerWatchingChunk(player, coordonate.x / 16, coordonate.z / 16)) continue;
@@ -607,10 +605,9 @@ public abstract class NodeBase {
 	{
 		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 
-		for (Object obj : server.getConfigurationManager().playerEntityList)
+		for (EntityPlayerMP player : server.getPlayerList().getPlayerList())
 		{
-			EntityPlayerMP player = (EntityPlayerMP) obj;
-			WorldServer worldServer = (WorldServer) MinecraftServer.getServer().worldServerForDimension(player.dimension);
+			WorldServer worldServer = (WorldServer) player.worldObj.getMinecraftServer().worldServerForDimension(player.dimension);
 			PlayerManager playerManager = worldServer.getPlayerChunkManager();
 			if (player.dimension != this.coordonate.dimention) continue;
 			if (!playerManager.isPlayerWatchingChunk(player, coordonate.x / 16, coordonate.z / 16)) continue;

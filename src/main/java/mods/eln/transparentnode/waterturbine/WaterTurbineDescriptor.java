@@ -15,16 +15,33 @@ import java.util.List;
 
 import static mods.eln.i18n.I18N.tr;
 
-public class WaterTurbineDescriptor extends TransparentNodeDescriptor {
-	public WaterTurbineDescriptor(
-			String name,Obj3D obj,
-			ElectricalCableDescriptor cable,
-			double nominalPower,
-			double maxVoltage,
+public class WaterTurbineDescriptor extends TransparentNodeDescriptor 
+{	
+	Coordonate waterCoord;
+	
+	Obj3DPart wheel,support,generator;
+	
+	Obj3D obj;
+	public ElectricalCableDescriptor cable;
+	public double nominalPower;
+
+
+	public double maxVoltage;
+	
+	public float speed;
+	
+	public String soundName;
+	public float nominalVolume;
+
+
+	public FunctionTable PfW;
+	
+	
+	public WaterTurbineDescriptor(String name, Obj3D obj, ElectricalCableDescriptor cable,
+			double nominalPower, double maxVoltage,
 			Coordonate waterCoord,
-			String soundName,
-			float nominalVolume
-			) {
+			String soundName, float nominalVolume)
+	{
 		super(name, WaterTurbineElement.class, WaterTurbineRender.class);
 
 		this.cable = cable;
@@ -44,57 +61,35 @@ public class WaterTurbineDescriptor extends TransparentNodeDescriptor {
 
 		voltageLevelColor = VoltageLevelColor.LowVoltage;
 	}
-	
-	Coordonate waterCoord;
-	
+		
 	public void setParent(net.minecraft.item.Item item, int damage)
 	{
 		super.setParent(item, damage);
 		Data.addEnergy(newItemStack());
 	}
 
-	
-
-	
-	Obj3DPart wheel,support,generator;
-	
-	Obj3D obj;
-	public ElectricalCableDescriptor cable;
-	public double nominalPower;
-
-
-	public double maxVoltage;
-	
-	public float speed;
-	
-	public String soundName;
-	public float nominalVolume;
-
-
-	public FunctionTable PfW;
-	
-	public void draw(float alpha) {
+	public void draw(float alpha)
+	{
 		if(support != null) support.draw();
 		if(generator != null) generator.draw();
 		if(wheel != null) wheel.draw(alpha,1f,0f,0f);
 	}
 
 	@Override
-	public boolean use2DIcon() {
+	public boolean use2DIcon() 
+	{
 		return true;
 	}
 	
 	@Override
-	public Direction getFrontFromPlace(Direction side,
-			EntityLivingBase entityLiving) {
-		return super.getFrontFromPlace(side, entityLiving);
+	public Direction getFrontFromPlace(Direction side, EntityLivingBase entity) 
+	{
+		return super.getFrontFromPlace(side, entity);
 	}
 	
-	
-	
 	@Override
-	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-		
+	public boolean handleRenderType(ItemStack item, ItemRenderType type)
+	{
 		return true;
 	}
 	
@@ -131,7 +126,7 @@ public class WaterTurbineDescriptor extends TransparentNodeDescriptor {
 	
 	public Coordonate getWaterCoordonate(World w) {
 		Coordonate coord = new Coordonate(waterCoord);
-		coord.setDimention(w.provider.dimensionId);
+		coord.setDimention(w.provider.getDimension());
 		return coord;
 	}
 	

@@ -183,7 +183,7 @@ public class WirelessUtils {
 				c.z = (int) vz;
 				if (c.getBlockExist()) {
 					Block b = c.getBlock();
-					if (b != Blocks.air && b.isOpaqueCube()) {
+					if (b != Blocks.air && b.isOpaqueCube(b.getDefaultState())) {
 						virtualDistance += 2.0;
 					}
 				}

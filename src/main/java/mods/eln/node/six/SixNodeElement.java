@@ -19,6 +19,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -230,8 +231,7 @@ public abstract class SixNodeElement implements GhostObserver, IPlayer, Publisha
 			sixNode.dropItem(getDropItemStack());
 	}
 
-	public abstract boolean onBlockActivated(EntityPlayer entityPlayer, Direction side,
-			float vx, float vy, float vz);
+	public abstract boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos);
 
 	/*
 	public void onBreakElement()

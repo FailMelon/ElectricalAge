@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -185,21 +186,21 @@ public class ThermalSensorElement extends SixNodeElement {
 	}
 
 	@Override
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
-		ItemStack currentItemStack = entityPlayer.getCurrentEquippedItem();
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos) {
+		ItemStack currentItemStack = entityPlayer.getHeldItemMainhand();
 
 		if (Utils.isPlayerUsingWrench(entityPlayer)) {
 			front = front.getNextClockwise();
 			sixNode.reconnect();
 			sixNode.setNeedPublish(true);
 			return true;
-		} else if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		} else if (Eln.multiMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return false;
 		}
-		if (Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		if (Eln.thermoMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return false;
 		}
-		if (Eln.allMeterElement.checkSameItemStack(entityPlayer.getCurrentEquippedItem())) {
+		if (Eln.allMeterElement.checkSameItemStack(entityPlayer.getHeldItemMainhand())) {
 			return false;
 		} else {
 			// setSwitchState(true);

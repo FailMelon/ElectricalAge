@@ -5,9 +5,11 @@ import mods.eln.misc.Coordonate;
 import mods.eln.misc.INBTTReady;
 import mods.eln.misc.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
@@ -15,7 +17,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class LightBlockEntity extends TileEntity {
+public class LightBlockEntity extends TileEntity implements ITickable {
 
     ArrayList<LightHandle> lightList = new ArrayList<LightHandle>();
 
@@ -134,7 +136,7 @@ public class LightBlockEntity extends TileEntity {
 	}	
 
 	@Override
-	public void updateEntity() {
+	public void update() {
 		if (worldObj.isRemote) return;
 		
 		if (lightList.isEmpty()) {
@@ -159,15 +161,16 @@ public class LightBlockEntity extends TileEntity {
 			}
 		}	
 	
-		if (light != worldObj.getBlockMetadata(xCoord, yCoord, zCoord)) {
+		IBlockState state = worldObj.getBlockState(getPos());
+		if (light != state.getBlock().getMetaFromState(state)) {
 			
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, light, 2);
-			worldObj.updateLightByType(EnumSkyBlock.Block, xCoord, yCoord, zCoord);
+			worldObj.checkLightFor(EnumSkyBlock.BLOCK, getPos());
 		}
 	}
 
 	public static void addLight(World w, int x, int y, int z, int light, int timeout) {
-		Block block = w.getBlock(x, y, z);
+		Block block = w.getBlockState(new BlockPos(x, y, z)).getBlock();
 		if (block != Eln.lightBlock) {
 			if (block != Blocks.air) return;
 			w.setBlock(x, y, z, Eln.lightBlock, light, 2);

@@ -43,8 +43,10 @@ import net.minecraft.network.play.server.SPacketCustomPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerManager;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -52,7 +54,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 
-public abstract class NodeBlockEntity extends TileEntity implements ITileEntitySpawnClient, INodeEntity {
+public abstract class NodeBlockEntity extends TileEntity implements ITileEntitySpawnClient, INodeEntity, ITickable {
 
     public static final LinkedList<NodeBlockEntity> clientList = new LinkedList<NodeBlockEntity>();
 
@@ -96,7 +98,7 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
 
         if (lastLight != light) {
             lastLight = light;
-            worldObj.updateLightByType(EnumSkyBlock.Block, xCoord, yCoord, zCoord);
+            worldObj.checkLight(getPos());
         }
 
 
@@ -139,7 +141,10 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
     public AxisAlignedBB getRenderBoundingBox() {
         if (cameraDrawOptimisation())
         {
-            return new AxisAlignedBB(xCoord - 1, yCoord - 1, zCoord - 1, xCoord + 1, yCoord + 1, zCoord + 1);
+        	BlockPos start = getPos().subtract(new Vec3i(1, 1, 1));
+        	BlockPos end = getPos().add(new Vec3i(1, 1, 1));
+        	
+            return new AxisAlignedBB(start, end);
         } else {
             return INFINITE_EXTENT_AABB;
         }
@@ -189,17 +194,10 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
 
     }
 
-
-    @Override
-    public boolean canUpdate() {
-
-        return true;
-    }
-
     boolean updateEntityFirst = true;
 
     @Override
-    public void updateEntity() {
+    public void update() {
         if (updateEntityFirst) {
             updateEntityFirst = false;
             if (!worldObj.isRemote) {
@@ -244,10 +242,10 @@ public abstract class NodeBlockEntity extends TileEntity implements ITileEntityS
         super.invalidate();
     }
 
-    public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
+    public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, BlockPos pos) {
         if (!worldObj.isRemote) {
             if (getNode() == null) return false;
-            getNode().onBlockActivated(entityPlayer, side, vx, vy, vz);
+            getNode().onBlockActivated(entityPlayer, side, pos);
             return true;
         }
         //if(entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemBlock)

@@ -59,7 +59,7 @@ public class TransparentNodeItem extends GenericItemBlockUsingDamage<Transparent
 		node.onBlockPlacedBy(new Coordonate(x, y, z,world),front,player,stack);
 		
 		world.setBlock(x, y, z, Block.getBlockFromItem(this), node.getBlockMetadata(),0x03);//caca1.5.1
-    	((NodeBlock)Block.getBlockFromItem(this)).onBlockPlacedBy(world, x, y, z,direction, player,metadata);
+    	((NodeBlock)Block.getBlockFromItem(this)).onBlockPlacedBy(world, x, y, z, direction, player,metadata);
     	
     	
     	

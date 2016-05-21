@@ -17,8 +17,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 
-public class WaterTurbineElement extends TransparentNodeElement{
-
+public class WaterTurbineElement extends TransparentNodeElement
+{
 	NbtElectricalLoad positiveLoad = new NbtElectricalLoad("positiveLoad");
 
 	PowerSource powerSource = new PowerSource("powerSource",positiveLoad);
@@ -26,14 +26,15 @@ public class WaterTurbineElement extends TransparentNodeElement{
 	WaterTurbineSlowProcess slowProcess = new WaterTurbineSlowProcess(this);
 	
 	WaterTurbineDescriptor descriptor;
-	
 
+	TransparentNodeElementInventory inventory = new TransparentNodeElementInventory(0 , 64, this);
+		
+	Coordonate waterCoord;
 	
 	public WaterTurbineElement(TransparentNode transparentNode,
-			TransparentNodeDescriptor descriptor) {
+			TransparentNodeDescriptor descriptor) 
+	{
 		super(transparentNode, descriptor);
-		
-
 		
 		this.descriptor = (WaterTurbineDescriptor) descriptor;
 		
@@ -45,43 +46,43 @@ public class WaterTurbineElement extends TransparentNodeElement{
 	}
 
 	@Override
-	public ElectricalLoad getElectricalLoad(Direction side, LRDU lrdu) {
+	public ElectricalLoad getElectricalLoad(Direction side, LRDU lrdu) 
+	{
 		if(lrdu != LRDU.Down) return null;
 		if(side == front) return positiveLoad;
 		return null;
 	}
 
 	@Override
-	public ThermalLoad getThermalLoad(Direction side, LRDU lrdu) {
+	public ThermalLoad getThermalLoad(Direction side, LRDU lrdu)
+	{
 		
 		return null;
 	}
 
 	@Override
-	public int getConnectionMask(Direction side, LRDU lrdu) {
-		
+	public int getConnectionMask(Direction side, LRDU lrdu) 
+	{
 		if(lrdu != LRDU.Down) return 0;
 		if(side == front) return NodeBase.maskElectricalPower;
 		return 0;
 	}
 
 	@Override
-	public String multiMeterString(Direction side) {
-		
+	public String multiMeterString(Direction side) 
+	{
 		return null;
 	}
 
 	@Override
-	public String thermoMeterString(Direction side) {
-		
+	public String thermoMeterString(Direction side) 
+	{
 		return null;
 	}
-
-	Coordonate waterCoord;
 		
 	@Override
-	public void initialize() {
-
+	public void initialize() 
+	{
 		setPhysicalValue();
 		waterCoord = descriptor.getWaterCoordonate(node.coordonate.world());
 		waterCoord.applyTransformation(front, node.coordonate);
@@ -91,55 +92,46 @@ public class WaterTurbineElement extends TransparentNodeElement{
 	}
 
 
-	private void setPhysicalValue() {
+	private void setPhysicalValue() 
+	{
 		descriptor.cable.applyTo(positiveLoad);
 	}
-
-
-	TransparentNodeElementInventory inventory = new TransparentNodeElementInventory(0 , 64, this);
 	
 	@Override
-	public IInventory getInventory() {
-		
+	public IInventory getInventory() 
+	{
 		return inventory;
 	}
 	
 	@Override
-	public boolean hasGui() {
-		
+	public boolean hasGui()
+	{
 		return false;
 	}
 	
 	@Override
-	public Container newContainer(Direction side, EntityPlayer player) {
-		
+	public Container newContainer(Direction side, EntityPlayer player) 
+	{
 		return new WaterTurbineContainer(this.node, player, inventory);
 	}
 
-
-	
 	@Override
-	public void networkSerialize(DataOutputStream stream) {
-		
+	public void networkSerialize(DataOutputStream stream) 
+	{
 		super.networkSerialize(stream);
-		try {
+		try 
+		{
 			stream.writeFloat((float) (powerSource.getP()/descriptor.nominalPower));
-		} catch (IOException e) {
-			
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
 		}
-		
 	}
 
 	@Override
-	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz) {
-		
+	public boolean onBlockActivated(EntityPlayer entityPlayer, Direction side, float vx, float vy, float vz)
+	{
 		return false;
 	}
-
-
-	
-	
-	 
-
 }

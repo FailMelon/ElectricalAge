@@ -5,6 +5,7 @@ import mods.eln.misc.UtilsClient;
 import mods.eln.wiki.Root;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
@@ -38,7 +39,7 @@ public class ClientKeyHandler {
 		for (int i = 0; i < desc.length; ++i) {
 			if(i != 3)
 			states[i] = false;
-			keys[i] = new KeyBinding(desc[i], keyValues[i], StatCollector.translateToLocal("ElectricalAge"));
+			keys[i] = new KeyBinding(desc[i], keyValues[i], I18n.translateToLocal("ElectricalAge"));
 			ClientRegistry.registerKeyBinding(keys[i]);
 		}
 	}

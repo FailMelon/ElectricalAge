@@ -1,5 +1,7 @@
 package mods.eln.sixnode.hub;
 
+import java.io.IOException;
+
 import mods.eln.gui.GuiButtonEln;
 import mods.eln.gui.GuiContainerEln;
 import mods.eln.gui.GuiHelperContainer;
@@ -120,7 +122,7 @@ public class HubGui extends GuiContainerEln {
 		}
 	}
 
-    protected void mouseClicked(int x, int y, int code) {
+    protected void mouseClicked(int x, int y, int code) throws IOException {
         super.mouseClicked(x, y, code);
     	x -= width / 2 - xSize / 2;
     	y -= height / 2 - ySize / 2;

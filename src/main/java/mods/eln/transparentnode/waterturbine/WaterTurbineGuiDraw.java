@@ -24,37 +24,28 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.StatCollector;
 
 
-public class WaterTurbineGuiDraw extends GuiContainerEln {
-
-	
+public class WaterTurbineGuiDraw extends GuiContainerEln 
+{
     private TransparentNodeElementInventory inventory;
     WaterTurbineRender render;
-
     
-    public WaterTurbineGuiDraw(EntityPlayer player, IInventory inventory,WaterTurbineRender render)
+    public WaterTurbineGuiDraw(EntityPlayer player, IInventory inventory, WaterTurbineRender render)
     {
-        super(new WaterTurbineContainer(null,player, inventory));
+        super(new WaterTurbineContainer(null, player, inventory));
         this.inventory = (TransparentNodeElementInventory) inventory;
-        this.render = render;
-        
-      
+        this.render = render;      
     }
     
     public void initGui()
     {
     	super.initGui();
-    	
-
-   
     }
 
 	@Override
-	protected GuiHelperContainer newHelper() {
-		
+	protected GuiHelperContainer newHelper()
+	{
 		return new GuiHelperContainer(this, 176, 166,8,84);
 	}
-	
 }

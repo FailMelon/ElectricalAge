@@ -70,8 +70,9 @@ public class CableRender {
 				}
 			}
 			
+			Block entityblock = entity.getWorld().getBlockState(new BlockPos(x2, y2, z2)).getBlock();
 			//no wrappeConection ?
-			if(! NodeBase.isBlockWrappable(entity.getWorld().getBlockState(new BlockPos(x2, y2, z2)).getBlock(), entity.getWorld(), x2, y2, z2)) {
+			if(! NodeBase.isBlockWrappable(entityblock, entity.getWorld(), entity.getPos())) {
 				continue;
 			} else {
 				switch(side) {
@@ -231,8 +232,9 @@ public class CableRender {
 				}
 			}
 			
+			Block teblock = element.tileEntity.getWorld().getBlockState(new BlockPos(x2, y2, z2)).getBlock();
 			//no wrappeConection ?
-			if(! NodeBase.isBlockWrappable(element.tileEntity.getWorld().getBlockState(new BlockPos(x2, y2, z2)).getBlock(), element.tileEntity.getWorld(),x2,y2,z2)) {
+			if(! NodeBase.isBlockWrappable(teblock, element.tileEntity.getWorld(), element.tileEntity.getPos())) {
 				continue;
 			} else {
 				switch(side) {

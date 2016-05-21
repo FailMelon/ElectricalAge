@@ -10,8 +10,8 @@ import mods.eln.node.NodeBase;
 import mods.eln.node.NodeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,15 +20,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SixNodeBlock extends NodeBlock {
 	// public static ArrayList<Integer> repertoriedItemStackId = new ArrayList<Integer>();
@@ -68,7 +68,8 @@ public class SixNodeBlock extends NodeBlock {
 	}
 
 	@Override
-	public float getBlockHardness(World world, int x, int y, int z) {
+	public float getBlockHardness(IBlockState blockState, World worldIn, BlockPos pos) 
+	{
 		return 0.3f;
 	}
 
@@ -82,7 +83,7 @@ public class SixNodeBlock extends NodeBlock {
 
 	SixNodeEntity getEntity(World world, int x, int y, int z)
 	{
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity != null && tileEntity instanceof SixNodeEntity)
 			return (SixNodeEntity) tileEntity;
 		Utils.println("ASSERTSixNodeEntity getEntity() null");
@@ -99,20 +100,27 @@ public class SixNodeBlock extends NodeBlock {
 	}
 
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	// 1.7.10: Old render code
+	/*
 	@Override
-	public boolean renderAsNormalBlock() {
-		return true;
-	}
-
+	public boolean renderAsNormalBlock() 
+	{
+	  return true;
+	}*/
+	
+    /**
+     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
+     */
 	@Override
-	public int getRenderType() {
-		return 0;
-	}
-
+    public EnumBlockRenderType getRenderType(IBlockState state)
+    {
+        return EnumBlockRenderType.MODEL;
+    }
+	
 	/*
 	 * @Override public int getLightOpacity(World world, int x, int y, int z) {
 	 * 
@@ -133,7 +141,7 @@ public class SixNodeBlock extends NodeBlock {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess w, int x, int y, int z, int side) {
-		TileEntity e = w.getTileEntity(x, y, z);
+		TileEntity e = w.getTileEntity(new BlockPos(x, y, z));
 		if (e == null) return blockIcon;
 		SixNodeEntity sne = (SixNodeEntity) e;
 		Block b = sne.sixNodeCacheBlock;
@@ -189,7 +197,7 @@ public class SixNodeBlock extends NodeBlock {
 	{
 		if (world.isRemote) return false;
 
-		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(x, y, z);
+		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(new BlockPos(x, y, z));
 
 		MovingObjectPosition MOP = collisionRayTrace(world, x, y, z, entityPlayer);
 		if (MOP == null) return false;
@@ -206,11 +214,11 @@ public class SixNodeBlock extends NodeBlock {
 
 			sixNode.sixNodeCacheBlock = Blocks.air;
 
-			Chunk chunk = world.getChunkFromBlockCoords(x, z);
+			Chunk chunk = world.getChunkFromBlockCoords(new BlockPos(x, y, z));
 			Utils.generateHeightMap(chunk);
 			Utils.updateSkylight(chunk);
 			chunk.generateSkylightMap();
-			Utils.updateAllLightTypes(world, x, y, z);
+			Utils.updateAllLightTypes(world, new BlockPos(x, y, z));
 
 			sixNode.setNeedPublish(true);
 			return false;
@@ -228,7 +236,7 @@ public class SixNodeBlock extends NodeBlock {
 
 		if (world.isRemote == false)
 		{
-			SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(x, y, z);
+			SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(new BlockPos(x, y, z));
 			SixNode sixNode = (SixNode) tileEntity.getNode();
 			if (sixNode == null) return;
 
@@ -246,7 +254,7 @@ public class SixNodeBlock extends NodeBlock {
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block par5)
 	{
-		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(x, y, z);
+		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(new BlockPos(x, y, z));
 		SixNode sixNode = (SixNode) tileEntity.getNode();
 		if (sixNode == null) return;
 
@@ -263,7 +271,7 @@ public class SixNodeBlock extends NodeBlock {
 
 		if (!sixNode.getIfSideRemain())
 		{
-			world.setBlockToAir(x, y, z);
+			world.setBlockState(new BlockPos(x, y, z), Blocks.air.getDefaultState())
 		}
 		else
 		{
@@ -276,11 +284,15 @@ public class SixNodeBlock extends NodeBlock {
 	boolean[] booltemp = new boolean[6];
 
 	@Override
-	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 start, Vec3 end)
+	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3d start, Vec3d end)
 	{
-		if (nodeHasCache(world, x, y, z)) return super.collisionRayTrace(world, x, y, z, start, end);
-		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(x, y, z);
+		if (nodeHasCache(world, x, y, z))
+			return super.collisionRayTrace(world, x, y, z, start, end);
+		
+		SixNodeEntity tileEntity = (SixNodeEntity) world.getTileEntity(new BlockPos(x, y, z));
+		
 		if (tileEntity == null) return null;
+		
 		if (world.isRemote)
 		{
 			booltemp[0] = tileEntity.getSyncronizedSideEnable(Direction.XN);
@@ -294,10 +306,8 @@ public class SixNodeBlock extends NodeBlock {
 			{
 				SixNodeElementRender element = entity.elementRenderList[Direction.YN.getInt()];
 				// setBlockBounds(0, 0, 0, 1, 1, 1);
-				if (element != null && element.sixNodeDescriptor.hasVolume()) {
-
-					return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), Vec3.createVectorHelper(0.5, 0.5, 0.5));
-				}
+				if (element != null && element.sixNodeDescriptor.hasVolume())
+					return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), new Vec3d(0.5, 0.5, 0.5));
 			}
 
 		}
@@ -319,7 +329,7 @@ public class SixNodeBlock extends NodeBlock {
 				{
 					SixNodeElement element = ((SixNode) node).sideElementList[Direction.YN.getInt()];
 					if (element != null && element.sixNodeElementDescriptor.hasVolume())
-						return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), Vec3.createVectorHelper(0.5, 0.5, 0.5));
+						return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), new Vec3d(0.5, 0.5, 0.5));
 				}
 			}
 
@@ -336,7 +346,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitY, y + w, y + 1 - w) && isIn(hitZ, z + w, z + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.XN.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.XN.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 		}
 		// XP
@@ -350,7 +360,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitY, y + w, y + 1 - w) && isIn(hitZ, z + w, z + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.XP.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.XP.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 		}
 		// YN
@@ -364,7 +374,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitX, x + w, x + 1 - w) && isIn(hitZ, z + w, z + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.YN.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 
 		}
@@ -379,7 +389,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitX, x + w, x + 1 - w) && isIn(hitZ, z + w, z + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.YP.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.YP.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 		}
 		// ZN
@@ -393,7 +403,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitY, y + w, y + 1 - w) && isIn(hitX, x + w, x + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.ZN.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.ZN.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 		}
 		// ZP
@@ -407,7 +417,7 @@ public class SixNodeBlock extends NodeBlock {
 				hitY = start.yCoord + ratio * (end.yCoord - start.yCoord);
 				hitZ = start.zCoord + ratio * (end.zCoord - start.zCoord);
 				if (isIn(hitY, y + w, y + 1 - w) && isIn(hitX, x + w, x + 1 - w))
-					return new MovingObjectPosition(x, y, z, Direction.ZP.toSideValue(), Vec3.createVectorHelper(hitX, hitY, hitZ));
+					return new MovingObjectPosition(x, y, z, Direction.ZP.toSideValue(), new Vec3d(hitX, hitY, hitZ));
 			}
 		}
 
@@ -425,11 +435,11 @@ public class SixNodeBlock extends NodeBlock {
 
 		// double distanceMax = (double)Minecraft.getMinecraft().playerController.getBlockReachDistance();
 		double distanceMax = 5.0;
-		Vec3 start = Vec3.createVectorHelper(entityLiving.posX, entityLiving.posY, entityLiving.posZ);
+		Vec3d start = new Vec3d(entityLiving.posX, entityLiving.posY, entityLiving.posZ);
 
 		if (!world.isRemote) start.yCoord += 1.62;
-		Vec3 var5 = entityLiving.getLook(0.5f);
-		Vec3 end = start.addVector(var5.xCoord * distanceMax, var5.yCoord * distanceMax, var5.zCoord * distanceMax);
+		Vec3d var5 = entityLiving.getLook(0.5f);
+		Vec3d end = start.addVector(var5.xCoord * distanceMax, var5.yCoord * distanceMax, var5.zCoord * distanceMax);
 
 		return collisionRayTrace(world, x, y, z, start, end);
 	}
@@ -442,9 +452,9 @@ public class SixNodeBlock extends NodeBlock {
 		vect[2] = z;
 		direction.applyTo(vect, 1);
 
-		Block block = world.getBlock(vect[0], vect[1], vect[2]);
+		Block block = world.getBlockState(new BlockPos(vect[0], vect[1], vect[2])).getBlock();
 		if (block == Blocks.air) return false;
-		if (block.isOpaqueCube()) return true;
+		if (block.isOpaqueCube(block.getDefaultState())) return true;
 
 		return false;
 	}
@@ -496,8 +506,11 @@ public class SixNodeBlock extends NodeBlock {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public AxisAlignedBB getSelectedBoundingBoxFromPool(World w, int x, int y, int z) {
-		if(hasVolume(w, x, y, z)) return super.getSelectedBoundingBoxFromPool(w, x, y, z);
+	public AxisAlignedBB getSelectedBoundingBoxFromPool(World w, int x, int y, int z) 
+	{
+		if(hasVolume(w, x, y, z)) 
+			return super.getSelectedBoundingBoxFromPool(w, x, y, z);
+		
 		MovingObjectPosition col = collisionRayTrace(w, x, y, z, Minecraft.getMinecraft().thePlayer);
 		double h = 0.2;
 		double hn = 1-h;
@@ -506,23 +519,23 @@ public class SixNodeBlock extends NodeBlock {
 		double bn = 1-0.02;
 		if (col != null) {
 			// Utils.println(Direction.fromIntMinecraftSide(col.sideHit));
-			switch (Direction.fromIntMinecraftSide(col.sideHit)) {
-			case XN:
-				return AxisAlignedBB.getBoundingBox((double) x+b, (double) y, (double) z, (double) x + h, (double) y + 1, (double) z + 1);
-			case XP:
-				return AxisAlignedBB.getBoundingBox((double) x+hn, (double) y, (double) z, (double) x + bn, (double) y + 1, (double) z + 1);
-			case YN:
-				return AxisAlignedBB.getBoundingBox((double) x, (double) y+b, (double) z, (double) x + 1, (double) y + h, (double) z + 1);
-			case YP:
-				return AxisAlignedBB.getBoundingBox((double) x, (double) y+hn, (double) z, (double) x + 1, (double) y + bn, (double) z + 1);
-			case ZN:
-				return AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z+b, (double) x + 1, (double) y + 1, (double) z + h);
-			case ZP:
-				return AxisAlignedBB.getBoundingBox((double) x, (double) y, (double) z+hn, (double) x + 1, (double) y + 1, (double) z + bn);
-
+			switch (Direction.fromIntMinecraftSide(col.sideHit))
+			{
+				case XN:
+					return new AxisAlignedBB((double) x+b, (double) y, (double) z, (double) x + h, (double) y + 1, (double) z + 1);
+				case XP:
+					return new AxisAlignedBB((double) x+hn, (double) y, (double) z, (double) x + bn, (double) y + 1, (double) z + 1);
+				case YN:
+					return new AxisAlignedBB((double) x, (double) y+b, (double) z, (double) x + 1, (double) y + h, (double) z + 1);
+				case YP:
+					return new AxisAlignedBB((double) x, (double) y+hn, (double) z, (double) x + 1, (double) y + bn, (double) z + 1);
+				case ZN:
+					return new AxisAlignedBB((double) x, (double) y, (double) z+b, (double) x + 1, (double) y + 1, (double) z + h);
+				case ZP:
+					return new AxisAlignedBB((double) x, (double) y, (double) z+hn, (double) x + 1, (double) y + 1, (double) z + bn);
 			}
 		}
-		return AxisAlignedBB.getBoundingBox(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);//super.getSelectedBoundingBoxFromPool(w, x, y, z);
+		return new AxisAlignedBB(0.5, 0.5, 0.5, 0.5, 0.5, 0.5);//super.getSelectedBoundingBoxFromPool(w, x, y, z);
 		// return AxisAlignedBB.getBoundingBox((double)p_149633_2_ , (double)p_149633_3_ , (double)p_149633_4_ + this.minZ+0.2, (double)p_149633_2_ + this.maxX, (double)p_149633_3_ + this.maxY, (double)p_149633_4_ + this.maxZ);
 		// return super.getSelectedBoundingBoxFromPool(w, x, y, z);
 	}

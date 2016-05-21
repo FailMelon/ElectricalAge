@@ -42,9 +42,9 @@ public class ReplicatorEntity extends EntityMob {
 
         this.tasks.addTask(p++, new EntityAISwimming(this));
         // this.tasks.addTask(p++, new EntityAIBreakDoor(this));
-        this.tasks.addTask(p++, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
-        this.tasks.addTask(p++, new EntityAIAttackOnCollide(this, EntityVillager.class, 1.0D, true));
-        this.tasks.addTask(p++, new EntityAIAttackOnCollide(this, ReplicatorEntity.class, 1.0D, true));
+        this.tasks.addTask(p++, new EntityAIAttackMelee(this, EntityPlayer.class, 1.0D, false));
+        this.tasks.addTask(p++, new EntityAIAttackMelee(this, EntityVillager.class, 1.0D, true));
+        this.tasks.addTask(p++, new EntityAIAttackMelee(this, ReplicatorEntity.class, 1.0D, true));
         this.tasks.addTask(p++, replicatorIa);
         this.tasks.addTask(p++, new EntityAIMoveTowardsRestriction(this, 1.0D));
         this.tasks.addTask(p++, new EntityAIMoveThroughVillage(this, 1.0D, false));
@@ -135,7 +135,7 @@ public class ReplicatorEntity extends EntityMob {
 
         if (isSpawnedFromWeather) {
             if (Math.random() < 0.33) {
-                for (Object s : EntityList.IDtoClassMapping.entrySet()) {
+                for (Object s : EntityList.idToClassMapping.entrySet()) {
                     Entry e = (Entry) s;
                     if (e.getValue() == ReplicatorEntity.class) {
                         this.entityDropItem(new ItemStack((Item) Item.itemRegistry.getObject("spawn_egg"), 1, (Integer) e.getKey()), 0.5f);

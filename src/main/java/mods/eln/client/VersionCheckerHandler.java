@@ -7,6 +7,7 @@ import mods.eln.misc.Color;
 import mods.eln.misc.Version;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -110,8 +111,8 @@ public class VersionCheckerHandler {
 
         // Print the current version when the client start a map
         if (Eln.versionCheckEnabled) {
-            m.thePlayer.addChatMessage(new ChatComponentText(Version.printColor()));
-            m.thePlayer.addChatMessage(new ChatComponentText(versionMsg));
+            m.thePlayer.addChatMessage(new TextComponentString(Version.printColor()));
+            m.thePlayer.addChatMessage(new TextComponentString(versionMsg));
         }
 
         MinecraftForge.EVENT_BUS.unregister(this);
